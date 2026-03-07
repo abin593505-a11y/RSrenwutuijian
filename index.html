@@ -563,7 +563,7 @@ Terus maju, masa depan menanti!`;
     // 复制新员工
     文档.getElementById('copyNewbieBtn').addEventListener('click', function() {
         const 文本 = 文档.getElementById('newbiePreview').innerText;
-        navigator.clipboard.writeText(文本).键，然后(() => {
+        navigator.clipboard.writeText(文本).then(() => {
             this.innerText = '✅ 已复制！';
             this.classList.add('copy-success');
             setTimeout(() => { this.innerText = '📋 复制话术'; this.classList.移除('copy-success'); }, 1500);
