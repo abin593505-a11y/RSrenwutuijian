@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>傻瓜式操作 · 三语同步｜双面板 (GitHub优化版)</title>
+    <title>傻瓜式操作 · 三语同步｜双面板 (修复版)</title>
     <!-- 优化说明：所有点击事件改用稳妥的事件代理 + 数据驱动，
          确保在GitHub静态托管环境下交互完全正常。内容与原始版完全一致，
-         同时修复百分比输入滞后问题，并精简了部分重复代码。 -->
+         同时修复百分比输入滞后问题，并精简了部分重复代码。 
+         本次修复：复制按钮不可用问题 (错误使用了中文变量名及文档引用) -->
     <style>
         * {
             box-sizing: border-box;
@@ -566,14 +567,16 @@ Terus maju, masa depan menanti!`;
             refreshAll();
             e.preventDefault();
         }
-        // 复制按钮
-        else if (target.classList.contains('copy-btn-icon') || target.parentElement?.classList.contains('copy-btn-icon')) {
+        // 复制按钮 - 修复点: 移除中文变量名，使用dataset.copy
+        else if (target.classList.contains('copy-btn-icon') || target.closest('.copy-btn-icon')) {
             const btn = target.closest('.copy-btn-icon');
             if (!btn) return;
-            const 输入  = btn.dataset.复制; // 'newbie' 或 'inviter'
-            const previewId = 输入  === 'newbie' ? 'newbiePreview' : 'inviterPreview';
-            const 文本 = 文档.getElementById(previewId).innerText;
-            navigator.clipboard.writeText(文本).then(() => {
+            // 获取复制类型: 从 data-copy 属性获取
+            const copyType = btn.dataset.复制;  // 'newbie' 或 'inviter'
+            const previewId = copyType === 'newbie' ? 'newbiePreview' : 'inviterPreview';
+            // 使用正确的 document 引用
+            const textToCopy = 文档.getElementById(previewId).innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalText = btn.innerText;
                 btn.innerText = '✅ 已复制！';
                 btn.classList.add('copy-success');
