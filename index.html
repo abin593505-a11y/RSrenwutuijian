@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>傻瓜式操作 · 三语同步｜双面板 (修复版)</title>
-    <!-- 优化说明：所有点击事件改用稳妥的事件代理 + 数据驱动，
-         确保在GitHub静态托管环境下交互完全正常。内容与原始版完全一致，
-         同时修复百分比输入滞后问题，并精简了部分重复代码。 
-         本次修复：复制按钮不可用问题 (错误使用了中文变量名及文档引用) -->
+    <title>傻瓜式操作 · 三语同步｜双面板 (复制按钮修复版)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -285,7 +281,7 @@
                     <button class="lang-btn" data-value="en">🇬🇧 EN</button>
                     <button class="lang-btn" data-value="my">🇲🇾 BM</button>
                 </div>
-                <button class="copy-btn-icon" data-copy="newbie">📋 复制话术</button>
+                <button class="copy-btn-icon" data-copy="newbie" id="copyNewbieBtn">📋 复制话术</button>
             </div>
             <div class="speech-preview" id="newbiePreview">加载中...</div>
         </div>
@@ -317,7 +313,7 @@
                     <button class="lang-btn" data-value="en">🇬🇧 EN</button>
                     <button class="lang-btn" data-value="my">🇲🇾 BM</button>
                 </div>
-                <button class="copy-btn-icon" data-copy="inviter">📋 复制话术</button>
+                <button class="copy-btn-icon" data-copy="inviter" id="copyInviterBtn">📋 复制话术</button>
             </div>
             <div class="speech-preview" id="inviterPreview">加载中...</div>
         </div>
@@ -348,7 +344,7 @@
 
 <script>
 (function() {
-    // 使用容器代理所有点击事件 (保障GitHub Pages环境)
+    // 使用容器代理大部分事件，但复制按钮单独绑定确保万无一失
     const container = document.getElementById('appContainer');
 
     // 状态存储
@@ -390,7 +386,7 @@
         return parseFloat(document.getElementById('inviterExtraPercent').value) || 0;
     }
 
-    // ----- 生成话术 (完全保留原始内容，仅变量替换) -----
+    // ----- 生成话术 -----
     function generateNewbieSpeech() {
         const data = levelData[state.newbieLevel];
         const level = state.newbieLevel;
@@ -520,29 +516,107 @@ Terus maju, masa depan menanti!`;
             : '⚠️ 邀请者等级 < 新员工 → 隐藏每日3%佣金段落';
     }
 
-    // --- 更新UI激活类 (同步按钮状态) ---
+    // --- 更新UI激活类 ---
     function syncActiveClasses() {
-        // 新员工等级
         document.querySelectorAll('[data-group="newbieLevel"] .level-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.newbieLevel);
         });
-        // 邀请者等级
         document.querySelectorAll('[data-group="inviterLevel"] .level-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.inviterLevel);
         });
-        // 新员工语言
         document.querySelectorAll('[data-group="newbieLang"] .lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.newbieLang);
         });
-        // 邀请者语言
         document.querySelectorAll('[data-group="inviterLang"] .lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.inviterLang);
         });
     }
 
-    // --- 事件代理 (处理所有点击) ---
+    // ========== 复制功能：使用最简单直接的方式 ==========
+    // 为两个复制按钮单独绑定事件，避开事件代理的复杂逻辑
+    function setupCopyButtons() {
+        const newbieCopyBtn = document.getElementById('copyNewbieBtn');
+        const inviterCopyBtn = document.getElementById('copyInviterBtn');
+        
+        if (newbieCopyBtn) {
+            newbieCopyBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const textToCopy = document.getElementById('newbiePreview').innerText;
+                
+                // 使用 Clipboard API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        showCopySuccess(this);
+                    }).catch(() => {
+                        fallbackCopy(textToCopy, this);
+                    });
+                } else {
+                    fallbackCopy(textToCopy, this);
+                }
+            });
+        }
+        
+        if (inviterCopyBtn) {
+            inviterCopyBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const textToCopy = document.getElementById('inviterPreview').innerText;
+                
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        showCopySuccess(this);
+                    }).catch(() => {
+                        fallbackCopy(textToCopy, this);
+                    });
+                } else {
+                    fallbackCopy(textToCopy, this);
+                }
+            });
+        }
+    }
+    
+    // 显示复制成功效果
+    function showCopySuccess(btn) {
+        const originalText = btn.innerText;
+        btn.innerText = '✅ 已复制！';
+        btn.classList.add('copy-success');
+        setTimeout(() => { 
+            btn.innerText = originalText; 
+            btn.classList.remove('copy-success');
+        }, 1500);
+    }
+    
+    // 降级方案：使用textarea复制
+    function fallbackCopy(text, btn) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        textarea.setSelectionRange(0, 99999);
+        
+        try {
+            const successful = 文档。execCommand('copy');
+            if (successful) {
+                showCopySuccess(btn);
+            } else {
+                alert('复制失败，请手动选择文字复制');
+            }
+        } catch (err) {
+            alert('复制失败，请手动选择文字复制');
+        }
+        
+        文档.body.removeChild(textarea);
+    }
+
+    // 事件代理处理其他点击
     container.addEventListener('click', (e) => {
         const target = e.target;
+        
         // 等级按钮
         if (target.classList.contains('level-option')) {
             const group = target.closest('[data-group]')?.dataset.group;
@@ -567,35 +641,23 @@ Terus maju, masa depan menanti!`;
             refreshAll();
             e.preventDefault();
         }
-        // 复制按钮 - 修复点: 移除中文变量名，使用dataset.copy
-        else if (target.classList.contains('copy-btn-icon') || target.closest('.copy-btn-icon')) {
-            const btn = target.closest('.copy-btn-icon');
-            if (!btn) return;
-            // 获取复制类型: 从 data-copy 属性获取
-            const copyType = btn.dataset.复制;  // 'newbie' 或 'inviter'
-            const previewId = copyType === 'newbie' ? 'newbiePreview' : 'inviterPreview';
-            // 使用正确的 document 引用
-            const textToCopy = 文档.getElementById(previewId).innerText;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = btn.innerText;
-                btn.innerText = '✅ 已复制！';
-                btn.classList.add('copy-success');
-                setTimeout(() => { 
-                    btn.innerText = originalText; 
-                    btn.classList.移除('copy-success');
-                }, 1500);
-            }).catch(() => alert('复制失败，请手动复制'));
-            e.preventDefault();
-        }
+        // 注意：复制按钮不在这里处理，已经单独绑定
     });
 
-    // 监听百分比输入 (直接绑定事件)
+    // 监听百分比输入
     文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
     文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
 
-    // 初始化激活类 + 首次渲染
+    // 初始化
     syncActiveClasses();
     refreshAll();
+    
+    // 设置复制按钮 (在DOM加载完成后执行)
+    if (文档.readyState === 'loading') {
+        文档.addEventListener('DOMContentLoaded', setupCopyButtons);
+    } else {
+        setupCopyButtons();
+    }
 })();
 </script>
 </body>
