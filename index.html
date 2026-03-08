@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>傻瓜式操作 · 三语同步｜双面板 (复制按钮修复版)</title>
+    <meta 名称="viewport" content="width=device-width, initial-scale=1.0">
+    <标题>傻瓜式操作 · 三语同步｜双面板</标题>
     <style>
         * {
             box-sizing: border-box;
@@ -96,7 +96,7 @@
             transition: 0.1s;
             border: 1px solid transparent;
         }
-        .level-option.active {
+        .level-option.活跃 {
             background: #1e4b3e;
             color: white;
             box-shadow: 0 8px 14px -6px #1b6148;
@@ -158,7 +158,7 @@
             color: #1d543e;
             transition: 0.1s;
         }
-        .lang-btn.active {
+        .lang-btn.活跃 {
             background: #1e4b3e;
             border-color: #1e4b3e;
             color: white;
@@ -251,7 +251,7 @@
 </head>
 <body>
 <div class="container" id="appContainer">
-    <h1>🧩 傻瓜式操作 · 三语同步 <small>奖金到账提示自动隐藏</small></h1>
+    <h1>🧩 傻瓜式操作 · 三语同步 <small>GitHub优化版</small></h1>
 
     <div class="row-split">
         <!-- 左侧新员工面板 -->
@@ -259,7 +259,7 @@
             <div class="panel-title newbie-title">🌟 新员工面板</div>
             <div class="level-section">
                 <div class="level-label">🆕 选择新员工等级</div>
-                <div class="level-btn-group" data-group="newbieLevel">
+                <div class="level-btn-group" id="newbieLevelGroup">
                     <button class="level-option active" data-value="R1">R1</button>
                     <button class="level-option" data-value="R2">R2</button>
                     <button class="level-option" data-value="R3">R3</button>
@@ -273,15 +273,15 @@
             </div>
             <div class="extra-row">
                 <label>🎁 额外奖励 %</label>
-                <input type="number" id="newbieExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
+                <input 输入 ="number" id="newbieExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
             </div>
             <div class="lang-copy-row">
-                <div class="lang-btn-group" data-group="newbieLang">
+                <div class="lang-btn-group" id="newbieLangGroup">
                     <button class="lang-btn active" data-value="cn">🇨🇳 中文</button>
                     <button class="lang-btn" data-value="en">🇬🇧 EN</button>
                     <button class="lang-btn" data-value="my">🇲🇾 BM</button>
                 </div>
-                <button class="copy-btn-icon" data-copy="newbie" id="copyNewbieBtn">📋 复制话术</button>
+                <button class="copy-btn-icon" id="copyNewbieBtn">📋 复制话术</button>
             </div>
             <div class="speech-preview" id="newbiePreview">加载中...</div>
         </div>
@@ -291,7 +291,7 @@
             <div class="panel-title inviter-title">🤝 邀请者面板</div>
             <div class="level-section">
                 <div class="level-label">🙋 选择邀请者等级</div>
-                <div class="level-btn-group" data-group="inviterLevel">
+                <div class="level-btn-group" id="inviterLevelGroup">
                     <button class="level-option active" data-value="R1">R1</button>
                     <button class="level-option" data-value="R2">R2</button>
                     <button class="level-option" data-value="R3">R3</button>
@@ -305,15 +305,15 @@
             </div>
             <div class="extra-row">
                 <label>🎁 额外奖励 %</label>
-                <input type="number" id="inviterExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
+                <input 输入 ="number" id="inviterExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
             </div>
             <div class="lang-copy-row">
-                <div class="lang-btn-group" data-group="inviterLang">
+                <div class="lang-btn-group" id="inviterLangGroup">
                     <button class="lang-btn active" data-value="cn">🇨🇳 中文</button>
                     <button class="lang-btn" data-value="en">🇬🇧 EN</button>
                     <button class="lang-btn" data-value="my">🇲🇾 BM</button>
                 </div>
-                <button class="copy-btn-icon" data-copy="inviter" id="copyInviterBtn">📋 复制话术</button>
+                <button class="copy-btn-icon" id="copyInviterBtn">📋 复制话术</button>
             </div>
             <div class="speech-preview" id="inviterPreview">加载中...</div>
         </div>
@@ -344,18 +344,14 @@
 
 <script>
 (function() {
-    // 使用容器代理大部分事件，但复制按钮单独绑定确保万无一失
-    const container = document.getElementById('appContainer');
-
-    // 状态存储
-    let state = {
+    // ========== 数据定义 ==========
+    const state = {
         newbieLevel: 'R1',
         inviterLevel: 'R1',
         newbieLang: 'cn',
         inviterLang: 'cn'
     };
 
-    // 等级数据
     const levelData = {
         'R1': { price: 150, daily: 5, monthly: 150, yearly: 1825, bonus: '15.00' },
         'R2': { price: 450, daily: 15, monthly: 450, yearly: 5475, bonus: '45.00' },
@@ -368,9 +364,17 @@
         'R9': { price: 259200, daily: 10800, monthly: 324000, yearly: 3942000, bonus: '25920.00' }
     };
 
+    // ========== 辅助函数 ==========
     function getRankNum(lvl) { return parseInt(lvl.replace('R', '')); }
     function hasDailyCommission() { return getRankNum(state.inviterLevel) >= getRankNum(state.newbieLevel); }
-
+    
+    function getNewbieExtraPercent() {
+        return parseFloat(文档.getElementById('newbieExtraPercent').value) || 0;
+    }
+    function getInviterExtraPercent() {
+        return parseFloat(文档.getElementById('inviterExtraPercent').value) || 0;
+    }
+    
     function getReferralBonus() {
         if (getRankNum(state.inviterLevel) < getRankNum(state.newbieLevel)) {
             return levelData[state.inviterLevel].bonus;
@@ -379,25 +383,18 @@
         }
     }
 
-    function getNewbieExtraPercent() {
-        return parseFloat(document.getElementById('newbieExtraPercent').value) || 0;
-    }
-    function getInviterExtraPercent() {
-        return parseFloat(document.getElementById('inviterExtraPercent').value) || 0;
-    }
-
-    // ----- 生成话术 -----
+    // ========== 话术生成 ==========
     function generateNewbieSpeech() {
-        const data = levelData[state.newbieLevel];
+        const 数据 = levelData[state.newbieLevel];
         const level = state.newbieLevel;
         const extraPercent = getNewbieExtraPercent();
-        const extraAmount = (extraPercent / 100) * data.price;
+        const extraAmount = (extraPercent / 100) * 数据.price;
         const bonusLine = (extraPercent > 0) ? `新员工奖金 RM${extraAmount.toFixed(2)} 已顺利存入您的 RS 账户，请注意查收～` : '';
 
         if (state.newbieLang === 'cn') {
             return `🎉 恭喜您！ 您已成功晋升至 ${level} 等级！ ${bonusLine}
 
-这是您迈向稳健财富增长的重要第一步！ 📈 收入一览 每日固定收益：RM${data.daily} 每月累计：RM${data.monthly} 每年累计：RM${data.yearly.toLocaleString()}
+这是您迈向稳健财富增长的重要第一步！ 📈 收入一览 每日固定收益：RM${数据.daily} 每月累计：RM${数据.monthly} 每年累计：RM${数据.yearly.toLocaleString()}
 
 为了让您的收入潜力更上一层楼，我们已为您全面开启： ✅ 更多合作伙伴邀请权限 ✅ 专属农耕投资机会
 
@@ -409,7 +406,7 @@ Sikit-sikit, lama-lama jadi bukit. 🐄✨
         } else if (state.newbieLang === 'en') {
             return `🎉 Congratulations! You have successfully advanced to level ${level}! ${bonusLine ? 'New member bonus of RM' + extraAmount.toFixed(2) + ' has been credited to your RS account. Please check it out～' : ''}
 
-This is your important first step toward steady wealth growth! 📈 Income Overview Daily fixed income: RM${data.daily} Monthly total: RM${data.monthly} Annual total: RM${data.yearly.toLocaleString()}
+This is your important first step toward steady wealth growth! 📈 Income Overview Daily fixed income: RM${数据.daily} Monthly total: RM${数据.monthly} Annual total: RM${数据.yearly.toLocaleString()}
 
 To further enhance your income potential, we have fully unlocked for you: ✅ More partner invitation privileges ✅ Exclusive farming investment opportunities
 
@@ -418,10 +415,10 @@ In the future, you will work with RS and the team to create more synergistic ret
 Sikit-sikit, lama-lama jadi bukit. 🐄✨
 
 Keep going, together we turn streams into rivers! 🚀`;
-        } else { // my
+        } else {
             return `🎉 Tahniah! Anda telah berjaya naik ke tahap ${level}! ${bonusLine ? 'Bonus ahli baru RM' + extraAmount.toFixed(2) + ' telah dikreditkan ke akaun RS anda. Sila semak～' : ''}
 
-Ini adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! 📈 Ringkasan Pendapatan Pendapatan harian tetap: RM${data.daily} Jumlah bulanan: RM${data.monthly} Jumlah tahunan: RM${data.yearly.toLocaleString()}
+Ini adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! 📈 Ringkasan Pendapatan Pendapatan harian tetap: RM${数据.daily} Jumlah bulanan: RM${数据.monthly} Jumlah tahunan: RM${数据.yearly.toLocaleString()}
 
 Untuk meningkatkan potensi pendapatan anda, kami telah membuka sepenuhnya: ✅ Lebih banyak keistimewaan jemputan rakan kongsi ✅ Peluang pelaburan pertanian eksklusif
 
@@ -443,23 +440,11 @@ Terus maju, kita jadikan anak sungai sebagai sungai besar! 🚀`;
         const extraBonusLineCn = (extraPercent > 0) ? `✅ 额外奖金 RM${extraAmount.toFixed(2)}\n` : '';
         const extraBonusLineEn = (extraPercent > 0) ? `✅ Extra bonus RM${extraAmount.toFixed(2)}\n` : '';
         const extraBonusLineMy = (extraPercent > 0) ? `✅ Bonus tambahan RM${extraAmount.toFixed(2)}\n` : '';
-        
         const totalBonus = (parseFloat(bonusAmount) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2);
 
-        const commissionParagraphCn = eligible ? 
-`更令人期待的是——
-未来您将持续享有下属每日 3% 的工作佣金！
-` : '';
-
-        const commissionParagraphEn = eligible ? 
-`What's more exciting——
-You will continue to enjoy 3% daily commission from your subordinates in the future!
-` : '';
-
-        const commissionParagraphMy = eligible ? 
-`Yang lebih menarik——
-Anda akan terus menikmati komisen harian 3% daripada bawahan pada masa hadapan!
-` : '';
+        const commissionCn = eligible ? `更令人期待的是——\n未来您将持续享有下属每日 3% 的工作佣金！\n` : '';
+        const commissionEn = eligible ? `What's more exciting——\nYou will continue to enjoy 3% daily commission from your subordinates in the future!\n` : '';
+        const commissionMy = eligible ? `Yang lebih menarik——\nAnda akan terus menikmati komisen harian 3% daripada bawahan pada masa hadapan!\n` : '';
 
         if (state.inviterLang === 'cn') {
             return `🎉 恭喜！
@@ -469,7 +454,7 @@ Anda akan terus menikmati komisen harian 3% daripada bawahan pada masa hadapan!
 ✅ 推荐奖励 RM${bonusAmount}
 ${extraBonusLineCn}总计奖励 RM${totalBonus} 已全部到账，存入您的 RS 账户，请注意查收！
 
-${commissionParagraphCn}每一份努力，都将转化为源源不断的被动收益与团队成长动力。
+${commissionCn}每一份努力，都将转化为源源不断的被动收益与团队成长动力。
 一人闪耀是星火，众人齐心是烈焰。
 感谢您的主动拓展与真诚引荐，这份成就，正是您眼光与行动力的最好见证。
 让我们继续携手并肩，与团队一起奔向更广阔的未来！
@@ -483,13 +468,13 @@ In this invitation, you have received:
 ✅ Referral bonus RM${bonusAmount}
 ${extraBonusLineEn}Total reward RM${totalBonus} has been credited to your RS account. Please check it out!
 
-${commissionParagraphEn}Every effort will be transformed into a continuous stream of passive income and team growth momentum.
+${commissionEn}Every effort will be transformed into a continuous stream of passive income and team growth momentum.
 One spark, a blazing fire.
 Thank you for your initiative and sincere invitation. This achievement is the best proof of your vision and action.
 Let us continue to work hand in hand and rush towards a broader future together!
 Because of you, the team is stronger; because of you, the future is brighter! 🚀
 Move forward, the future is promising!`;
-        } else { // my
+        } else {
             return `🎉 Tahniah!
 Anda telah berjaya menjemput rakan kongsi tahap ${state.newbieLevel} menyertai keluarga RS. Perjalanan pertumbuhan baharu secara rasmi bermula!
 
@@ -497,7 +482,7 @@ Dalam jemputan ini, anda telah menerima:
 ✅ Bonus rujukan RM${bonusAmount}
 ${extraBonusLineMy}Jumlah ganjaran RM${totalBonus} telah dikreditkan ke akaun RS anda. Sila semak!
 
-${commissionParagraphMy}Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.
+${commissionMy}Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.
 Satu percikan, api yang marak.
 Terima kasih atas inisiatif dan jemputan ikhlas anda. Pencapaian ini adalah bukti terbaik visi dan tindakan anda.
 Mari kita terus bekerjasama dan melangkah ke arah masa depan yang lebih cerah!
@@ -506,102 +491,79 @@ Terus maju, masa depan menanti!`;
         }
     }
 
-    // 刷新所有预览 + 底部规则
-    function refreshAll() {
-        document.getElementById('newbiePreview').innerText = generateNewbieSpeech();
-        document.getElementById('inviterPreview').innerText = generateInviterSpeech();
-        const ruleEl = document.getElementById('globalRule');
-        ruleEl.innerText = hasDailyCommission() 
-            ? '✅ 邀请者等级 ≥ 新员工 → 显示每日3%佣金段落' 
-            : '⚠️ 邀请者等级 < 新员工 → 隐藏每日3%佣金段落';
-    }
-
-    // --- 更新UI激活类 ---
-    function syncActiveClasses() {
-        document.querySelectorAll('[data-group="newbieLevel"] .level-option').forEach(btn => {
+    // ========== UI更新 ==========
+    function updateActiveClasses() {
+        // 新员工等级
+        文档.querySelectorAll('#newbieLevelGroup .level-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.newbieLevel);
         });
-        document.querySelectorAll('[data-group="inviterLevel"] .level-option').forEach(btn => {
+        // 邀请者等级
+        文档.querySelectorAll('#inviterLevelGroup .level-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.inviterLevel);
         });
-        document.querySelectorAll('[data-group="newbieLang"] .lang-btn').forEach(btn => {
+        // 新员工语言
+        document.querySelectorAll('#newbieLangGroup .lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.newbieLang);
         });
-        document.querySelectorAll('[data-group="inviterLang"] .lang-btn').forEach(btn => {
+        // 邀请者语言
+        document.querySelectorAll('#inviterLangGroup .lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.inviterLang);
         });
     }
 
-    // ========== 复制功能：使用最简单直接的方式 ==========
-    // 为两个复制按钮单独绑定事件，避开事件代理的复杂逻辑
-    function setupCopyButtons() {
-        const newbieCopyBtn = document.getElementById('copyNewbieBtn');
-        const inviterCopyBtn = document.getElementById('copyInviterBtn');
+    function refreshAll() {
+        文档.getElementById('newbiePreview').innerText = generateNewbieSpeech();
+        文档.getElementById('inviterPreview').innerText = generateInviterSpeech();
+        文档.getElementById('globalRule').innerText = hasDailyCommission() 
+            ? '✅ 邀请者等级 ≥ 新员工 → 显示每日3%佣金段落' 
+            : '⚠️ 邀请者等级 < 新员工 → 隐藏每日3%佣金段落';
+    }
+
+    // ========== 复制功能 (完全独立) ==========
+    function setupCopyButton(btnId, previewId) {
+        const btn = 文档.getElementById(btnId);
+        if (!btn) return;
         
-        if (newbieCopyBtn) {
-            newbieCopyBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const textToCopy = document.getElementById('newbiePreview').innerText;
-                
-                // 使用 Clipboard API
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        showCopySuccess(this);
-                    }).catch(() => {
-                        fallbackCopy(textToCopy, this);
-                    });
-                } else {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const textToCopy = 文档.getElementById(previewId).innerText;
+            
+            // 现代浏览器优先
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showCopySuccess(this);
+                }).catch(() => {
                     fallbackCopy(textToCopy, this);
-                }
-            });
-        }
-        
-        if (inviterCopyBtn) {
-            inviterCopyBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const textToCopy = document.getElementById('inviterPreview').innerText;
-                
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        showCopySuccess(this);
-                    }).catch(() => {
-                        fallbackCopy(textToCopy, this);
-                    });
-                } else {
-                    fallbackCopy(textToCopy, this);
-                }
-            });
-        }
+                });
+            } else {
+                fallbackCopy(textToCopy, this);
+            }
+        });
     }
     
-    // 显示复制成功效果
     function showCopySuccess(btn) {
-        const originalText = btn.innerText;
+        const original = btn.innerText;
         btn.innerText = '✅ 已复制！';
         btn.classList.add('copy-success');
-        setTimeout(() => { 
-            btn.innerText = originalText; 
-            btn.classList.remove('copy-success');
+        setTimeout(() => {
+            btn.innerText = original;
+            btn.classList.移除('copy-success');
         }, 1500);
     }
     
-    // 降级方案：使用textarea复制
-    function fallbackCopy(text, btn) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        textarea.setSelectionRange(0, 99999);
+    function fallbackCopy(文本, btn) {
+        const ta = 文档.createElement('textarea');
+        ta.value = 文本;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        文档.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, 99999);
         
         try {
-            const successful = 文档。execCommand('copy');
-            if (successful) {
+            if (文档.execCommand('copy')) {
                 showCopySuccess(btn);
             } else {
                 alert('复制失败，请手动选择文字复制');
@@ -610,53 +572,72 @@ Terus maju, masa depan menanti!`;
             alert('复制失败，请手动选择文字复制');
         }
         
-        文档.body.removeChild(textarea);
+        文档.body.removeChild(ta);
     }
 
-    // 事件代理处理其他点击
-    container.addEventListener('click', (e) => {
-        const target = e.target;
+    // ========== 绑定所有事件 (直接、无代理) ==========
+    function bindEvents() {
+        // 新员工等级点击
+        文档。querySelectorAll('#newbieLevelGroup .level-option').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                state.newbieLevel = this.dataset.value;
+                updateActiveClasses();
+                refreshAll();
+            });
+        });
         
-        // 等级按钮
-        if (target.classList.contains('level-option')) {
-            const group = target.closest('[data-group]')?.dataset.group;
-            if (group === 'newbieLevel') {
-                state.newbieLevel = target.dataset.value;
-            } else if (group === 'inviterLevel') {
-                state.inviterLevel = target.dataset.value;
-            } else return;
-            syncActiveClasses();
-            refreshAll();
-            e.preventDefault();
-        }
-        // 语言按钮
-        else if (target.classList.contains('lang-btn')) {
-            const group = target.closest('[data-group]')?.dataset.group;
-            if (group === 'newbieLang') {
-                state.newbieLang = target.dataset.value;
-            } else if (group === 'inviterLang') {
-                state.inviterLang = target.dataset.value;
-            } else return;
-            syncActiveClasses();
-            refreshAll();
-            e.preventDefault();
-        }
-        // 注意：复制按钮不在这里处理，已经单独绑定
-    });
+        // 邀请者等级点击
+        文档.querySelectorAll('#inviterLevelGroup .level-option').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                state.inviterLevel = this.dataset.value;
+                updateActiveClasses();
+                refreshAll();
+            });
+        });
+        
+        // 新员工语言点击
+        文档.querySelectorAll('#newbieLangGroup .lang-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e。preventDefault();
+                state.newbieLang = this.dataset.value;
+                updateActiveClasses();
+                refreshAll();
+            });
+        });
+        
+        // 邀请者语言点击
+        文档.querySelectorAll('#inviterLangGroup .lang-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                state.inviterLang = this.dataset.value;
+                updateActiveClasses();
+                refreshAll();
+            });
+        });
+        
+        // 百分比输入
+        文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
+        文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
+        
+        // 复制按钮
+        setupCopyButton('copyNewbieBtn', 'newbiePreview');
+        setupCopyButton('copyInviterBtn', 'inviterPreview');
+    }
 
-    // 监听百分比输入
-    文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
-    文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
-
-    // 初始化
-    syncActiveClasses();
-    refreshAll();
+    // ========== 启动 ==========
+    function init() {
+        updateActiveClasses();
+        refreshAll();
+        bindEvents();
+    }
     
-    // 设置复制按钮 (在DOM加载完成后执行)
+    // 确保DOM加载完成
     if (文档.readyState === 'loading') {
-        文档.addEventListener('DOMContentLoaded', setupCopyButtons);
+        文档.addEventListener('DOMContentLoaded', init);
     } else {
-        setupCopyButtons();
+        init();
     }
 })();
 </script>
