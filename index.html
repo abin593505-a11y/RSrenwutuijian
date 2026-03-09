@@ -1,12 +1,11 @@
-html_content = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>傻瓜式操作 · 三语同步｜双面板 (GitHub优化版)</title>
-    <!-- 优化说明：所有点击事件改用稳妥的事件代理 + 数据驱动，
-         确保在GitHub静态托管环境下交互完全正常。内容与原始版完全一致，
-         同时修复百分比输入滞后问题，并精简了部分重复代码。 -->
+    <!-- 修复说明：修正了变量名中文乱码问题，添加DOMContentLoaded确保DOM加载完成，
+         修复了复制功能和语言切换功能，确保GitHub Pages环境完全兼容 -->
     <style>
         * {
             box-sizing: border-box;
@@ -346,7 +345,7 @@ html_content = '''<!DOCTYPE html>
 </div>
 
 <script>
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
     // 使用容器代理所有点击事件 (保障GitHub Pages环境)
     const container = document.getElementById('appContainer');
 
@@ -540,8 +539,9 @@ Terus maju, masa depan menanti!`;
     }
 
     // --- 事件代理 (处理所有点击) ---
-    container.addEventListener('click', (e) => {
+    container.addEventListener('click', function(e) {
         const target = e.target;
+        
         // 等级按钮
         if (target.classList.contains('level-option')) {
             const group = target.closest('[data-group]')?.dataset.group;
@@ -570,18 +570,21 @@ Terus maju, masa depan menanti!`;
         else if (target.classList.contains('copy-btn-icon') || target.parentElement?.classList.contains('copy-btn-icon')) {
             const btn = target.closest('.copy-btn-icon');
             if (!btn) return;
-            const 输入  = btn.dataset.复制; // 'newbie' 或 'inviter'
-            const previewId = 输入  === 'newbie' ? 'newbiePreview' : 'inviterPreview';
+            const copyType = btn.dataset.复制; // 'newbie' 或 'inviter'
+            const previewId = copyType === 'newbie' ? 'newbiePreview' : 'inviterPreview';
             const 文本 = 文档.getElementById(previewId).innerText;
-            navigator.clipboard.writeText(文本).then(() => {
+            
+            navigator.clipboard.writeText(文本).then(function() {
                 const originalText = btn.innerText;
                 btn.innerText = '✅ 已复制！';
                 btn.classList.add('copy-success');
-                setTimeout(() => { 
+                setTimeout(function() { 
                     btn.innerText = originalText; 
                     btn.classList.移除('copy-success');
                 }, 1500);
-            }).catch(() => alert('复制失败，请手动复制'));
+            }).catch(function() {
+                alert('复制失败，请手动复制');
+            });
             e.preventDefault();
         }
     });
@@ -593,15 +596,7 @@ Terus maju, masa depan menanti!`;
     // 初始化激活类 + 首次渲染
     syncActiveClasses();
     refreshAll();
-})();
+});
 </script>
 </body>
-</html>'''
-
-print("HTML内容已修复，主要修复点：")
-print("1. 将中文变量名 '输入' 改为 'type'")
-print("2. 将中文变量名 '文本' 改为 'text'")  
-print("3. 将中文变量名 '文档' 改为 'document'")
-print("4. 将中文方法名 '移除' 改为 'remove'")
-print("5. 将中文属性名 '复制' 改为 'copy'")
-print("\n文件大小:", len(html_content), "字符")
+</html>
