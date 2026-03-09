@@ -180,6 +180,7 @@
             box-shadow: 0 5px 12px rgba(0,80,40,0.3);
             transition: 0.15s;
             border: 1px solid #0e6644;
+            user-select: none;
         }
         .copy-btn-icon:hover {
             background: #146b48;
@@ -283,7 +284,7 @@
                     <button class="lang-btn" data-value="en">🇬🇧 EN</button>
                     <button class="lang-btn" data-value="my">🇲🇾 BM</button>
                 </div>
-                <button class="copy-btn-icon" data-copy="newbie">📋 复制话术</button>
+                <button class="copy-btn-icon" id="copyNewbieBtn" type="button">📋 复制话术</button>
             </div>
             <div class="speech-preview" id="newbiePreview">加载中...</div>
         </div>
@@ -315,7 +316,7 @@
                     <button class="lang-btn" data-value="en">🇬🇧 EN</button>
                     <button class="lang-btn" data-value="my">🇲🇾 BM</button>
                 </div>
-                <button class="copy-btn-icon" data-copy="inviter">📋 复制话术</button>
+                <button class="copy-btn-icon" id="copyInviterBtn" type="button">📋 复制话术</button>
             </div>
             <div class="speech-preview" id="inviterPreview">加载中...</div>
         </div>
@@ -546,23 +547,23 @@ Terus maju, masa depan menanti!`;
             });
         } else {
             // 不支持clipboard API，直接降级
-            fallbackCopy(文本, btnElement);
+            fallbackCopy(text, btnElement);
         }
     }
 
-    function fallbackCopy(文本, btnElement) {
+    function fallbackCopy(text, btnElement) {
         // 创建隐藏的textarea
-        const textarea = 文档.createElement('textarea');
-        textarea.value = 文本;
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
         textarea.style.position = 'fixed';   // 防止滚动
         textarea.style.opacity = '0';
         textarea.style.left = '-9999px';
-        文档.body.appendChild(textarea);
+        document.body.appendChild(textarea);
         textarea.select();
         textarea.setSelectionRange(0, 99999); // 对于移动设备
 
         try {
-            const successful = 文档.execCommand('copy');
+            const successful = document.execCommand('copy');
             if (successful) {
                 showCopySuccess(btnElement);
             } else {
@@ -571,7 +572,7 @@ Terus maju, masa depan menanti!`;
         } catch (err) {
             alert('当前浏览器不支持自动复制，请手动复制。');
         } finally {
-            文档.body.removeChild(textarea);
+            document.body.removeChild(textarea);
         }
     }
 
@@ -613,19 +614,19 @@ Terus maju, masa depan menanti!`;
             refreshAll();
             e.preventDefault();
         }
-        // 复制按钮 —— 完全重写，安全可靠
-        else if (target.classList.contains('copy-btn-icon') || target.parentElement?.classList.contains('copy-btn-icon')) {
-            const btn = target.closest('.copy-btn-icon');
-            if (!btn) return;
+    });
 
-            const panel = btn.dataset.复制;  // 'newbie' 或 'inviter'
-            const previewId = panel === 'newbie' ? 'newbiePreview' : 'inviterPreview';
-            const textToCopy = 文档.getElementById(previewId).innerText;
+    // 直接绑定复制按钮事件（修复版）
+    文档.getElementById('copyNewbieBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        const textToCopy = 文档.getElementById('newbiePreview').innerText;
+        copyTextToClipboard(textToCopy, this);
+    });
 
-            // 调用终极复制函数
-            copyTextToClipboard(textToCopy, btn);
-            e.preventDefault();
-        }
+    文档.getElementById('copyInviterBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        const textToCopy = 文档.getElementById('inviterPreview').innerText;
+        copyTextToClipboard(textToCopy, this);
     });
 
     // 百分比输入监听
