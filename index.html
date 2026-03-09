@@ -1,17 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>傻瓜式操作 · 三语同步｜双面板 (GitHub优化版)</title>
-  <!-- 修复点：
-    1) 原代码里把 document / dataset / classList 等写成了中文变量(文档/复制/移除)，导致 JS 直接报错 => 页面一直“加载中…”
-    2) 复制按钮事件里读取了错误的 dataset 字段
-    3) 增加 clipboard 兼容回退方案，GitHub Pages 也可用（需 https 域名，Pages 默认满足）
-    4) 输入框 input 事件正常刷新，按钮切换使用事件代理保持不变
-    其余内容与样式保持不变
-  -->
   <style>
     * { box-sizing: border-box; margin: 0; font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif; }
     body { background: #f0f8f3; display: flex; justify-content: center; padding: 2rem 1rem; }
@@ -89,7 +81,7 @@
             <button class="lang-btn" data-value="en">🇬🇧 EN</button>
             <button class="lang-btn" data-value="my">🇲🇾 BM</button>
           </div>
-          <button class="copy-btn-icon" data-copy="newbie">📋 复制话术</button>
+          <button class="copy-btn-icon" data-copy="newbie"><span>📋</span> <span>复制话术</span></button>
         </div>
         <div class="speech-preview" id="newbiePreview">加载中...</div>
       </div>
@@ -121,7 +113,7 @@
             <button class="lang-btn" data-value="en">🇬🇧 EN</button>
             <button class="lang-btn" data-value="my">🇲🇾 BM</button>
           </div>
-          <button class="copy-btn-icon" data-copy="inviter">📋 复制话术</button>
+          <button class="copy-btn-icon" data-copy="inviter"><span>📋</span> <span>复制话术</span></button>
         </div>
         <div class="speech-preview" id="inviterPreview">加载中...</div>
       </div>
@@ -156,10 +148,10 @@
 
   <script>
     (function () {
-      const container = document.getElementById('appContainer');
+      var container = document.getElementById('appContainer');
 
       // 状态
-      const state = {
+      var state = {
         newbieLevel: 'R1',
         inviterLevel: 'R1',
         newbieLang: 'cn',
@@ -167,7 +159,7 @@
       };
 
       // 等级数据
-      const levelData = {
+      var levelData = {
         'R1': { price: 150, daily: 5, monthly: 150, yearly: 1825, bonus: '15.00' },
         'R2': { price: 450, daily: 15, monthly: 450, yearly: 5475, bonus: '45.00' },
         'R3': { price: 1350, daily: 45, monthly: 1350, yearly: 16425, bonus: '135.00' },
@@ -194,122 +186,49 @@
         return parseFloat(document.getElementById('inviterExtraPercent').value) || 0;
       }
 
-      // 生成话术（内容保持不变，只修复拼接/变量）
       function generateNewbieSpeech() {
-        const data = levelData[state.newbieLevel];
-        const level = state.newbieLevel;
-        const extraPercent = getNewbieExtraPercent();
-        const extraAmount = (extraPercent / 100) * data.price;
-        const bonusLine = (extraPercent > 0)
-          ? `新员工奖金 RM${extraAmount.toFixed(2)} 已顺利存入您的 RS 账户，请注意查收～`
+        var data = levelData[state.newbieLevel];
+        var level = state.newbieLevel;
+        var extraPercent = getNewbieExtraPercent();
+        var extraAmount = (extraPercent / 100) * data.price;
+        var bonusLine = (extraPercent > 0)
+          ? '\u65B0\u5458\u5DE5\u5956\u91D1 RM' + extraAmount.toFixed(2) + ' \u5DF2\u987A\u5229\u5B58\u5165\u60A8\u7684 RS \u8D26\u6237\uFF0C\u8BF7\u6CE8\u610F\u67E5\u6536\uFF5E'
           : '';
 
         if (state.newbieLang === 'cn') {
-          return `🎉 恭喜您！ 您已成功晋升至 ${level} 等级！ ${bonusLine}
-
-这是您迈向稳健财富增长的重要第一步！ 📈 收入一览 每日固定收益：RM${data.daily} 每月累计：RM${data.monthly} 每年累计：RM${data.yearly.toLocaleString()}
-
-为了让您的收入潜力更上一层楼，我们已为您全面开启： ✅ 更多合作伙伴邀请权限 ✅ 专属农耕投资机会
-
-未来，您将与RS、与团队一起，创造更多协同收益，实现资产持续增长。
-
-Sikit-sikit, lama-lama jadi bukit. 🐄✨
-
-继续加油，我们一起把小溪变成大河！🚀`;
+          return '\uD83C\uDF89 \u606D\u559C\u60A8\uFF01 \u60A8\u5DF2\u6210\u529F\u664B\u5347\u81F3 ' + level + ' \u7B49\u7EA7\uFF01 ' + bonusLine + '\n\n\u8FD9\u662F\u60A8\u8FC8\u5411\u7A33\u5065\u8D22\u5BCC\u589E\u957F\u7684\u91CD\u8981\u7B2C\u4E00\u6B65\uFF01 \uD83D\uDCC8 \u6536\u5165\u4E00\u89C8 \u6BCF\u65E5\u56FA\u5B9A\u6536\u76CA\uFF1ARM' + data.daily + ' \u6BCF\u6708\u7D2F\u8BA1\uFF1ARM' + data.monthly + ' \u6BCF\u5E74\u7D2F\u8BA1\uFF1ARM' + data.yearly.toLocaleString() + '\n\n\u4E3A\u4E86\u8BA9\u60A8\u7684\u6536\u5165\u6F5C\u529B\u66F4\u4E0A\u4E00\u5C42\u697C\uFF0C\u6211\u4EEC\u5DF2\u4E3A\u60A8\u5168\u9762\u5F00\u542F\uFF1A \u2705 \u66F4\u591A\u5408\u4F5C\u4F19\u4F34\u9080\u8BF7\u6743\u9650 \u2705 \u4E13\u5C5E\u519C\u8015\u6295\u8D44\u673A\u4F1A\n\n\u672A\u6765\uFF0C\u60A8\u5C06\u4E0ERS\u3001\u4E0E\u56E2\u961F\u4E00\u8D77\uFF0C\u521B\u9020\u66F4\u591A\u534F\u540C\u6536\u76CA\uFF0C\u5B9E\u73B0\u8D44\u4EA7\u6301\u7EED\u589E\u957F\u3002\n\nSikit-sikit, lama-lama jadi bukit. \uD83D\uDC04\u2728\n\n\u7EE7\u7EED\u52A0\u6CB9\uFF0C\u6211\u4EEC\u4E00\u8D77\u628A\u5C0F\u6EAA\u53D8\u6210\u5927\u6CB3\uFF01\uD83D\uDE80';
         } else if (state.newbieLang === 'en') {
-          return `🎉 Congratulations! You have successfully advanced to level ${level}! ${bonusLine ? 'New member bonus of RM' + extraAmount.toFixed(2) + ' has been credited to your RS account. Please check it out～' : ''}
-
-This is your important first step toward steady wealth growth! 📈 Income Overview Daily fixed income: RM${data.daily} Monthly total: RM${data.monthly} Annual total: RM${data.yearly.toLocaleString()}
-
-To further enhance your income potential, we have fully unlocked for you: ✅ More partner invitation privileges ✅ Exclusive farming investment opportunities
-
-In the future, you will work with RS and the team to create more synergistic returns and achieve sustained asset growth.
-
-Sikit-sikit, lama-lama jadi bukit. 🐄✨
-
-Keep going, together we turn streams into rivers! 🚀`;
+          var enBonus = (extraPercent > 0) ? 'New member bonus of RM' + extraAmount.toFixed(2) + ' has been credited to your RS account. Please check it out\uFF5E' : '';
+          return '\uD83C\uDF89 Congratulations! You have successfully advanced to level ' + level + '! ' + enBonus + '\n\nThis is your important first step toward steady wealth growth! \uD83D\uDCC8 Income Overview Daily fixed income: RM' + data.daily + ' Monthly total: RM' + data.monthly + ' Annual total: RM' + data.yearly.toLocaleString() + '\n\nTo further enhance your income potential, we have fully unlocked for you: \u2705 More partner invitation privileges \u2705 Exclusive farming investment opportunities\n\nIn the future, you will work with RS and the team to create more synergistic returns and achieve sustained asset growth.\n\nSikit-sikit, lama-lama jadi bukit. \uD83D\uDC04\u2728\n\nKeep going, together we turn streams into rivers! \uD83D\uDE80';
         } else {
-          return `🎉 Tahniah! Anda telah berjaya naik ke tahap ${level}! ${bonusLine ? 'Bonus ahli baru RM' + extraAmount.toFixed(2) + ' telah dikreditkan ke akaun RS anda. Sila semak～' : ''}
-
-Ini adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! 📈 Ringkasan Pendapatan Pendapatan harian tetap: RM${data.daily} Jumlah bulanan: RM${data.monthly} Jumlah tahunan: RM${data.yearly.toLocaleString()}
-
-Untuk meningkatkan potensi pendapatan anda, kami telah membuka sepenuhnya: ✅ Lebih banyak keistimewaan jemputan rakan kongsi ✅ Peluang pelaburan pertanian eksklusif
-
-Pada masa hadapan, anda akan bekerjasama dengan RS dan pasukan untuk menjana lebih banyak pulangan sinergi dan mencapai pertumbuhan aset yang berterusan.
-
-Sikit-sikit, lama-lama jadi bukit. 🐄✨
-
-Terus maju, kita jadikan anak sungai sebagai sungai besar! 🚀`;
+          var myBonus = (extraPercent > 0) ? 'Bonus ahli baru RM' + extraAmount.toFixed(2) + ' telah dikreditkan ke akaun RS anda. Sila semak\uFF5E' : '';
+          return '\uD83C\uDF89 Tahniah! Anda telah berjaya naik ke tahap ' + level + '! ' + myBonus + '\n\nIni adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! \uD83D\uDCC8 Ringkasan Pendapatan Pendapatan harian tetap: RM' + data.daily + ' Jumlah bulanan: RM' + data.monthly + ' Jumlah tahunan: RM' + data.yearly.toLocaleString() + '\n\nUntuk meningkatkan potensi pendapatan anda, kami telah membuka sepenuhnya: \u2705 Lebih banyak keistimewaan jemputan rakan kongsi \u2705 Peluang pelaburan pertanian eksklusif\n\nPada masa hadapan, anda akan bekerjasama dengan RS dan pasukan untuk menjana lebih banyak pulangan sinergi dan mencapai pertumbuhan aset yang berterusan.\n\nSikit-sikit, lama-lama jadi bukit. \uD83D\uDC04\u2728\n\nTerus maju, kita jadikan anak sungai sebagai sungai besar! \uD83D\uDE80';
         }
       }
 
       function generateInviterSpeech() {
-        const bonusAmount = getReferralBonus();
-        const eligible = hasDailyCommission();
-        const extraPercent = getInviterExtraPercent();
-        const inviterPrice = levelData[state.inviterLevel].price;
-        const extraAmount = (extraPercent / 100) * inviterPrice;
+        var bonusAmount = getReferralBonus();
+        var eligible = hasDailyCommission();
+        var extraPercent = getInviterExtraPercent();
+        var inviterPrice = levelData[state.inviterLevel].price;
+        var extraAmount = (extraPercent / 100) * inviterPrice;
 
-        const extraBonusLineCn = (extraPercent > 0) ? `✅ 额外奖金 RM${extraAmount.toFixed(2)}\n` : '';
-        const extraBonusLineEn = (extraPercent > 0) ? `✅ Extra bonus RM${extraAmount.toFixed(2)}\n` : '';
-        const extraBonusLineMy = (extraPercent > 0) ? `✅ Bonus tambahan RM${extraAmount.toFixed(2)}\n` : '';
+        var extraBonusLineCn = (extraPercent > 0) ? '\u2705 \u989D\u5916\u5956\u91D1 RM' + extraAmount.toFixed(2) + '\n' : '';
+        var extraBonusLineEn = (extraPercent > 0) ? '\u2705 Extra bonus RM' + extraAmount.toFixed(2) + '\n' : '';
+        var extraBonusLineMy = (extraPercent > 0) ? '\u2705 Bonus tambahan RM' + extraAmount.toFixed(2) + '\n' : '';
 
-        const totalBonus = (parseFloat(bonusAmount) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2);
+        var totalBonus = (parseFloat(bonusAmount) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2);
 
-        const commissionParagraphCn = eligible ? `更令人期待的是——
-未来您将持续享有下属每日 3% 的工作佣金！
-` : '';
-
-        const commissionParagraphEn = eligible ? `What's more exciting——
-You will continue to enjoy 3% daily commission from your subordinates in the future!
-` : '';
-
-        const commissionParagraphMy = eligible ? `Yang lebih menarik——
-Anda akan terus menikmati komisen harian 3% daripada bawahan pada masa hadapan!
-` : '';
+        var commissionParagraphCn = eligible ? '\u66F4\u4EE4\u4EBA\u671F\u5F85\u7684\u662F\u2014\u2014\n\u672A\u6765\u60A8\u5C06\u6301\u7EED\u4EAB\u6709\u4E0B\u5C5E\u6BCF\u65E5 3% \u7684\u5DE5\u4F5C\u4F63\u91D1\uFF01\n' : '';
+        var commissionParagraphEn = eligible ? 'What\'s more exciting\u2014\u2014\nYou will continue to enjoy 3% daily commission from your subordinates in the future!\n' : '';
+        var commissionParagraphMy = eligible ? 'Yang lebih menarik\u2014\u2014\nAnda akan terus menikmati komisen harian 3% daripada bawahan pada masa hadapan!\n' : '';
 
         if (state.inviterLang === 'cn') {
-          return `🎉 恭喜！
-您已成功邀请一位 ${state.newbieLevel} 级合作伙伴 加入 RS 大家庭，全新成长之旅正式启航！
-
-本次邀请，您已获得：
-✅ 推荐奖励 RM${bonusAmount}
-${extraBonusLineCn}总计奖励 RM${totalBonus} 已全部到账，存入您的 RS 账户，请注意查收！
-
-${commissionParagraphCn}每一份努力，都将转化为源源不断的被动收益与团队成长动力。
-一人闪耀是星火，众人齐心是烈焰。
-感谢您的主动拓展与真诚引荐，这份成就，正是您眼光与行动力的最好见证。
-让我们继续携手并肩，与团队一起奔向更广阔的未来！
-因为有您，团队更强大；因为有您，前路更光明！🚀
-继续向前，未来可期！`;
+          return '\uD83C\uDF89 \u606D\u559C\uFF01\n\u60A8\u5DF2\u6210\u529F\u9080\u8BF7\u4E00\u4F4D ' + state.newbieLevel + ' \u7EA7\u5408\u4F5C\u4F19\u4F34 \u52A0\u5165 RS \u5927\u5BB6\u5EAD\uFF0C\u5168\u65B0\u6210\u957F\u4E4B\u65C5\u6B63\u5F0F\u542F\u822A\uFF01\n\n\u672C\u6B21\u9080\u8BF7\uFF0C\u60A8\u5DF2\u83B7\u5F97\uFF1A\n\u2705 \u63A8\u8350\u5956\u52B1 RM' + bonusAmount + '\n' + extraBonusLineCn + '\u603B\u8BA1\u5956\u52B1 RM' + totalBonus + ' \u5DF2\u5168\u90E8\u5230\u8D26\uFF0C\u5B58\u5165\u60A8\u7684 RS \u8D26\u6237\uFF0C\u8BF7\u6CE8\u610F\u67E5\u6536\uFF01\n\n' + commissionParagraphCn + '\u6BCF\u4E00\u4EFD\u52AA\u529B\uFF0C\u90FD\u5C06\u8F6C\u5316\u4E3A\u6E90\u6E90\u4E0D\u65AD\u7684\u88AB\u52A8\u6536\u76CA\u4E0E\u56E2\u961F\u6210\u957F\u52A8\u529B\u3002\n\u4E00\u4EBA\u95EA\u8000\u662F\u661F\u706B\uFF0C\u4F17\u4EBA\u9F50\u5FC3\u662F\u70C8\u7130\u3002\n\u611F\u8C22\u60A8\u7684\u4E3B\u52A8\u62D3\u5C55\u4E0E\u771F\u8BDA\u5F15\u8350\uFF0C\u8FD9\u4EFD\u6210\u5C31\uFF0C\u6B63\u662F\u60A8\u773C\u5149\u4E0E\u884C\u52A8\u529B\u7684\u6700\u597D\u89C1\u8BC1\u3002\n\u8BA9\u6211\u4EEC\u7EE7\u7EED\u643A\u624B\u5E76\u80A9\uFF0C\u4E0E\u56E2\u961F\u4E00\u8D77\u5954\u5411\u66F4\u5E7F\u9614\u7684\u672A\u6765\uFF01\n\u56E0\u4E3A\u6709\u60A8\uFF0C\u56E2\u961F\u66F4\u5F3A\u5927\uFF1B\u56E0\u4E3A\u6709\u60A8\uFF0C\u524D\u8DEF\u66F4\u5149\u660E\uFF01\uD83D\uDE80\n\u7EE7\u7EED\u5411\u524D\uFF0C\u672A\u6765\u53EF\u671F\uFF01';
         } else if (state.inviterLang === 'en') {
-          return `🎉 Congratulations!
-You have successfully invited a ${state.newbieLevel} partner to join the RS family. A new journey of growth officially begins!
-
-In this invitation, you have received:
-✅ Referral bonus RM${bonusAmount}
-${extraBonusLineEn}Total reward RM${totalBonus} has been credited to your RS account. Please check it out!
-
-${commissionParagraphEn}Every effort will be transformed into a continuous stream of passive income and team growth momentum.
-One spark, a blazing fire.
-Thank you for your initiative and sincere invitation. This achievement is the best proof of your vision and action.
-Let us continue to work hand in hand and rush towards a broader future together!
-Because of you, the team is stronger; because of you, the future is brighter! 🚀
-Move forward, the future is promising!`;
+          return '\uD83C\uDF89 Congratulations!\nYou have successfully invited a ' + state.newbieLevel + ' partner to join the RS family. A new journey of growth officially begins!\n\nIn this invitation, you have received:\n\u2705 Referral bonus RM' + bonusAmount + '\n' + extraBonusLineEn + 'Total reward RM' + totalBonus + ' has been credited to your RS account. Please check it out!\n\n' + commissionParagraphEn + 'Every effort will be transformed into a continuous stream of passive income and team growth momentum.\nOne spark, a blazing fire.\nThank you for your initiative and sincere invitation. This achievement is the best proof of your vision and action.\nLet us continue to work hand in hand and rush towards a broader future together!\nBecause of you, the team is stronger; because of you, the future is brighter! \uD83D\uDE80\nMove forward, the future is promising!';
         } else {
-          return `🎉 Tahniah!
-Anda telah berjaya menjemput rakan kongsi tahap ${state.newbieLevel} menyertai keluarga RS. Perjalanan pertumbuhan baharu secara rasmi bermula!
-
-Dalam jemputan ini, anda telah menerima:
-✅ Bonus rujukan RM${bonusAmount}
-${extraBonusLineMy}Jumlah ganjaran RM${totalBonus} telah dikreditkan ke akaun RS anda. Sila semak!
-
-${commissionParagraphMy}Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.
-Satu percikan, api yang marak.
-Terima kasih atas inisiatif dan jemputan ikhlas anda. Pencapaian ini adalah bukti terbaik visi dan tindakan anda.
-Mari kita terus bekerjasama dan melangkah ke arah masa depan yang lebih cerah!
-Kerana anda, pasukan lebih kuat; kerana anda, masa depan lebih cerah! 🚀
-Terus maju, masa depan menanti!`;
+          return '\uD83C\uDF89 Tahniah!\nAnda telah berjaya menjemput rakan kongsi tahap ' + state.newbieLevel + ' menyertai keluarga RS. Perjalanan pertumbuhan baharu secara rasmi bermula!\n\nDalam jemputan ini, anda telah menerima:\n\u2705 Bonus rujukan RM' + bonusAmount + '\n' + extraBonusLineMy + 'Jumlah ganjaran RM' + totalBonus + ' telah dikreditkan ke akaun RS anda. Sila semak!\n\n' + commissionParagraphMy + 'Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.\nSatu percikan, api yang marak.\nTerima kasih atas inisiatif dan jemputan ikhlas anda. Pencapaian ini adalah bukti terbaik visi dan tindakan anda.\nMari kita terus bekerjasama dan melangkah ke arah masa depan yang lebih cerah!\nKerana anda, pasukan lebih kuat; kerana anda, masa depan lebih cerah! \uD83D\uDE80\nTerus maju, masa depan menanti!';
         }
       }
 
@@ -317,102 +236,170 @@ Terus maju, masa depan menanti!`;
         document.getElementById('newbiePreview').innerText = generateNewbieSpeech();
         document.getElementById('inviterPreview').innerText = generateInviterSpeech();
 
-        const ruleEl = document.getElementById('globalRule');
+        var ruleEl = document.getElementById('globalRule');
         ruleEl.innerText = hasDailyCommission()
-          ? '✅ 邀请者等级 ≥ 新员工 → 显示每日3%佣金段落'
-          : '⚠️ 邀请者等级 < 新员工 → 隐藏每日3%佣金段落';
+          ? '\u2705 \u9080\u8BF7\u8005\u7B49\u7EA7 \u2265 \u65B0\u5458\u5DE5 \u2192 \u663E\u793A\u6BCF\u65E53%\u4F63\u91D1\u6BB5\u843D'
+          : '\u26A0\uFE0F \u9080\u8BF7\u8005\u7B49\u7EA7 < \u65B0\u5458\u5DE5 \u2192 \u9690\u85CF\u6BCF\u65E53%\u4F63\u91D1\u6BB5\u843D';
       }
 
       function syncActiveClasses() {
-        document.querySelectorAll('[data-group="newbieLevel"] .level-option').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.value === state.newbieLevel);
-        });
-        document.querySelectorAll('[data-group="inviterLevel"] .level-option').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.value === state.inviterLevel);
-        });
-        document.querySelectorAll('[data-group="newbieLang"] .lang-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.value === state.newbieLang);
-        });
-        document.querySelectorAll('[data-group="inviterLang"] .lang-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.value === state.inviterLang);
-        });
+        var groups = ['newbieLevel', 'inviterLevel', 'newbieLang', 'inviterLang'];
+        for (var g = 0; g < groups.length; g++) {
+          var groupName = groups[g];
+          var wrapper = document.querySelector('[data-group="' + groupName + '"]');
+          if (!wrapper) continue;
+          var buttons = wrapper.querySelectorAll('button');
+          for (var i = 0; i < buttons.length; i++) {
+            var btn = buttons[i];
+            if (btn.getAttribute('data-value') === state[groupName]) {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          }
+        }
       }
 
-      // 复制（含回退）
-      async function copyText(text) {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
+      // 复制文本 - 兼容方案
+      function copyTextToClipboard(text, callback) {
+        // 方案1: 现代 Clipboard API
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(function () {
+            callback(true);
+          }).catch(function () {
+            // 如果 Clipboard API 失败，使用回退方案
+            fallbackCopy(text, callback);
+          });
           return;
         }
-        // fallback
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.setAttribute('readonly', '');
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        ta.style.top = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        const ok = document.execCommand('copy');
-        document.body.removeChild(ta);
-        if (!ok) throw new Error('fallback copy failed');
+        // 方案2: 回退方案
+        fallbackCopy(text, callback);
+      }
+
+      function fallbackCopy(text, callback) {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;';
+          document.body.appendChild(ta);
+
+          // iOS 兼容
+          var range = document.createRange();
+          ta.contentEditable = 'true';
+          ta.readOnly = false;
+          ta.select();
+          ta.setSelectionRange(0, text.length);
+
+          var ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          callback(ok);
+        } catch (e) {
+          callback(false);
+        }
+      }
+
+      // 找到最近的匹配祖先元素 (兼容不支持 closest 的环境)
+      function findClosest(el, selector) {
+        if (el.closest) return el.closest(selector);
+        var current = el;
+        while (current && current !== document) {
+          if (current.matches && current.matches(selector)) return current;
+          current = current.parentElement || current.parentNode;
+        }
+        return null;
+      }
+
+      // 获取 data-group 值
+      function getGroup(el) {
+        var wrapper = findClosest(el, '[data-group]');
+        return wrapper ? wrapper.getAttribute('data-group') : null;
       }
 
       // 事件代理：按钮点击
-      container.addEventListener('click', (e) => {
-        const target = e.target;
+      container.addEventListener('click', function (e) {
+        var target = e.target;
 
-        if (target.classList.contains('level-option')) {
-          const group = target.closest('[data-group]')?.dataset.group;
-          if (group === 'newbieLevel') state.newbieLevel = target.dataset.value;
-          else if (group === 'inviterLevel') state.inviterLevel = target.dataset.value;
-          else return;
-
+        // 等级按钮 - 用 closest 确保点击子元素也能匹配
+        var levelBtn = findClosest(target, '.level-option');
+        if (levelBtn) {
+          var group = getGroup(levelBtn);
+          var value = levelBtn.getAttribute('data-value');
+          if (group === 'newbieLevel') {
+            state.newbieLevel = value;
+          } else if (group === 'inviterLevel') {
+            state.inviterLevel = value;
+          } else {
+            return;
+          }
           syncActiveClasses();
           refreshAll();
           e.preventDefault();
           return;
         }
 
-        if (target.classList.contains('lang-btn')) {
-          const group = target.closest('[data-group]')?.dataset.group;
-          if (group === 'newbieLang') state.newbieLang = target.dataset.value;
-          else if (group === 'inviterLang') state.inviterLang = target.dataset.value;
-          else return;
-
+        // 语言按钮 - 用 closest 确保点击子元素也能匹配
+        var langBtn = findClosest(target, '.lang-btn');
+        if (langBtn) {
+          var langGroup = getGroup(langBtn);
+          var langValue = langBtn.getAttribute('data-value');
+          if (langGroup === 'newbieLang') {
+            state.newbieLang = langValue;
+          } else if (langGroup === 'inviterLang') {
+            state.inviterLang = langValue;
+          } else {
+            return;
+          }
           syncActiveClasses();
           refreshAll();
           e.preventDefault();
           return;
         }
 
-        const copyBtn = target.closest('.copy-btn-icon');
+        // 复制按钮
+        var copyBtn = findClosest(target, '.copy-btn-icon');
         if (copyBtn) {
-          const who = copyBtn.dataset.复制; // 'newbie' or 'inviter'
-          const previewId = (who === 'newbie') ? 'newbiePreview' : 'inviterPreview';
-          const 文本 = 文档.getElementById(previewId).innerText;
+          var who = copyBtn.getAttribute('data-copy'); // 'newbie' or 'inviter'
+          var previewId = (who === 'newbie') ? 'newbiePreview' : 'inviterPreview';
+          var previewEl = 文档。getElementById(previewId);
+          if (!previewEl) return;
+          var 文本 = previewEl.innerText || previewEl.textContent;
 
-          copyText(文本).then(() => {
-            const originalText = copyBtn.innerText;
-            copyBtn.innerText = '✅ 已复制！';
-            copyBtn.classList.add('copy-success');
-            setTimeout(() => {
-              copyBtn.innerText = originalText;
-              copyBtn.classList.移除('copy-success');
-            }, 1500);
-          }).catch(() => alert('复制失败，请手动复制'));
+          copyTextToClipboard(文本, function (success) {
+            if (success) {
+              var spans = copyBtn.querySelectorAll('span');
+              if (spans.length >= 2) {
+                spans[0].textContent = '\u2705';
+                spans[1].textContent = ' \u5DF2\u590D\u5236\uFF01';
+              } else {
+                copyBtn.textContent = '\u2705 \u5DF2\u590D\u5236\uFF01';
+              }
+              copyBtn.classList.add('copy-success');
+              setTimeout(function () {
+                var s = copyBtn.querySelectorAll('span');
+                if (s.length >= 2) {
+                  s[0].textContent = '\uD83D\uDCCB';
+                  s[1].textContent = ' \u590D\u5236\u8BDD\u672F';
+                } else {
+                  copyBtn.textContent = '\uD83D\uDCCB \u590D\u5236\u8BDD\u672F';
+                }
+                copyBtn.classList.移除('copy-success');
+              }, 1500);
+            } else {
+              alert('\u590D\u5236\u5931\u8D25\uFF0C\u8BF7\u624B\u52A8\u590D\u5236');
+            }
+          });
 
           e.preventDefault();
+          return;
         }
       });
 
       // 输入框实时刷新
-      文档.getElementById('newbieExtraPercent').addEventListener('input', () => {
-        syncActiveClasses();
+      文档.getElementById('newbieExtraPercent').addEventListener('input', function () {
         refreshAll();
       });
-      文档.getElementById('inviterExtraPercent').addEventListener('input', () => {
-        syncActiveClasses();
+      文档.getElementById('inviterExtraPercent').addEventListener('input', function () {
         refreshAll();
       });
 
@@ -423,4 +410,3 @@ Terus maju, masa depan menanti!`;
   </script>
 </body>
 </html>
-```
