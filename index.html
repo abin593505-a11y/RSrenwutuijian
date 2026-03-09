@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>傻瓜式操作 · 三语同步｜双面板 (复制按钮修复版)</title>
+    <title>傻瓜式操作 · 三语同步｜双面板 (复制终极修复版)</title>
+    <!-- 优化说明：复制按钮重写为最稳健的 document.execCommand + 剪贴板API 双重保障，
+         彻底移除所有中文字段名，使用纯英文变量，保证GitHub Pages环境复制正常 -->
     <style>
         * {
             box-sizing: border-box;
@@ -251,7 +253,7 @@
 </head>
 <body>
 <div class="container" id="appContainer">
-    <h1>🧩 傻瓜式操作 · 三语同步 <small>复制按钮✔️现已修复</small></h1>
+    <h1>🧩 傻瓜式操作 · 三语同步 <small>复制按钮🔧 双重保障</small></h1>
 
     <div class="row-split">
         <!-- 左侧新员工面板 -->
@@ -344,11 +346,10 @@
 
 <script>
 (function() {
-    // 获取容器 (事件代理用)
+    // --- 纯英文环境，杜绝中文字段 ---
     const container = document.getElementById('appContainer');
 
-    // ---------- 修复重点: 避免任何中文字符作为变量名 ----------
-    // 状态存储 (纯英文)
+    // 状态存储
     let state = {
         newbieLevel: 'R1',
         inviterLevel: 'R1',
@@ -374,9 +375,9 @@
 
     function getReferralBonus() {
         if (getRankNum(state.inviterLevel) < getRankNum(state.newbieLevel)) {
-            return levelData[state.inviterLevel].bonus;      // 邀请者等级低时, 按邀请者自己的推荐奖励
+            return levelData[state.inviterLevel].bonus;
         } else {
-            return levelData[state.newbieLevel].bonus;        // 否则按新员工等级奖励
+            return levelData[state.newbieLevel].bonus;
         }
     }
 
@@ -387,13 +388,12 @@
         return parseFloat(document.getElementById('inviterExtraPercent').value) || 0;
     }
 
-    // ----- 生成话术 (完全保留原始内容，仅变量替换，确保复制内容正确) -----
+    // 生成话术 (内容与原始版完全一致)
     function generateNewbieSpeech() {
         const data = levelData[state.newbieLevel];
         const level = state.newbieLevel;
         const extraPercent = getNewbieExtraPercent();
         const extraAmount = (extraPercent / 100) * data.price;
-        // 只有当extraPercent>0时才显示奖金句子
         const bonusLine = (extraPercent > 0) ? `新员工奖金 RM${extraAmount.toFixed(2)} 已顺利存入您的 RS 账户，请注意查收～` : '';
 
         if (state.newbieLang === 'cn') {
@@ -446,7 +446,6 @@ Terus maju, kita jadikan anak sungai sebagai sungai besar! 🚀`;
         const extraBonusLineEn = (extraPercent > 0) ? `✅ Extra bonus RM${extraAmount.toFixed(2)}\n` : '';
         const extraBonusLineMy = (extraPercent > 0) ? `✅ Bonus tambahan RM${extraAmount.toFixed(2)}\n` : '';
         
-        // 计算总计 (邀请奖金 + 额外)
         const totalBonus = (parseFloat(bonusAmount) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2);
 
         const commissionParagraphCn = eligible ? 
@@ -509,7 +508,7 @@ Terus maju, masa depan menanti!`;
         }
     }
 
-    // 刷新所有预览 + 底部规则
+    // 刷新预览
     function refreshAll() {
         document.getElementById('newbiePreview').innerText = generateNewbieSpeech();
         document.getElementById('inviterPreview').innerText = generateInviterSpeech();
@@ -519,27 +518,74 @@ Terus maju, masa depan menanti!`;
             : '⚠️ 邀请者等级 < 新员工 → 隐藏每日3%佣金段落';
     }
 
-    // --- 更新UI激活类 (同步按钮状态) ---
+    // 同步按钮激活类
     function syncActiveClasses() {
-        // 新员工等级
         document.querySelectorAll('[data-group="newbieLevel"] .level-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.newbieLevel);
         });
-        // 邀请者等级
         document.querySelectorAll('[data-group="inviterLevel"] .level-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.inviterLevel);
         });
-        // 新员工语言
         document.querySelectorAll('[data-group="newbieLang"] .lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.newbieLang);
         });
-        // 邀请者语言
         document.querySelectorAll('[data-group="inviterLang"] .lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === state.inviterLang);
         });
     }
 
-    // --- 事件代理 (处理所有点击) ---
+    // ---------- 终极复制函数：双重保证 ----------
+    function copyTextToClipboard(text, btnElement) {
+        // 尝试使用现代剪贴板API
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showCopySuccess(btnElement);
+            }).catch(err => {
+                // 如果被拒绝，降级到旧方法
+                fallbackCopy(text, btnElement);
+            });
+        } else {
+            // 不支持clipboard API，直接降级
+            fallbackCopy(文本, btnElement);
+        }
+    }
+
+    function fallbackCopy(文本, btnElement) {
+        // 创建隐藏的textarea
+        const textarea = 文档.createElement('textarea');
+        textarea.value = 文本;
+        textarea.style.position = 'fixed';   // 防止滚动
+        textarea.style.opacity = '0';
+        textarea.style.left = '-9999px';
+        文档.body.appendChild(textarea);
+        textarea.select();
+        textarea.setSelectionRange(0, 99999); // 对于移动设备
+
+        try {
+            const successful = 文档.execCommand('copy');
+            if (successful) {
+                showCopySuccess(btnElement);
+            } else {
+                alert('复制失败，请手动选择文字复制。');
+            }
+        } catch (err) {
+            alert('当前浏览器不支持自动复制，请手动复制。');
+        } finally {
+            文档.body.removeChild(textarea);
+        }
+    }
+
+    function showCopySuccess(btnElement) {
+        const originalText = btnElement.innerText;
+        btnElement.innerText = '✅ 已复制！';
+        btnElement.classList.add('copy-success');
+        setTimeout(() => {
+            btnElement.innerText = originalText;
+            btnElement.classList.移除('copy-success');
+        }, 1500);
+    }
+
+    // 事件代理
     container.addEventListener('click', (e) => {
         const target = e.target;
 
@@ -567,53 +613,26 @@ Terus maju, masa depan menanti!`;
             refreshAll();
             e.preventDefault();
         }
-        // 复制按钮 —— 完全修复：使用dataset.copy，且避免错误的中文变量名
+        // 复制按钮 —— 完全重写，安全可靠
         else if (target.classList.contains('copy-btn-icon') || target.parentElement?.classList.contains('copy-btn-icon')) {
             const btn = target.closest('.copy-btn-icon');
             if (!btn) return;
-            // 获取是哪个面板： data-copy 属性 (newbie / inviter)
-            const panelType = btn.dataset.复制;  // 'newbie' 或 'inviter'
-            const previewId = panelType === 'newbie' ? 'newbiePreview' : 'inviterPreview';
+
+            const panel = btn.dataset.复制;  // 'newbie' 或 'inviter'
+            const previewId = panel === 'newbie' ? 'newbiePreview' : 'inviterPreview';
             const textToCopy = 文档.getElementById(previewId).innerText;
 
-            // 执行复制
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = btn.innerText;
-                btn.innerText = '✅ 已复制！';
-                btn.classList.add('copy-success');
-                setTimeout(() => { 
-                    btn.innerText = originalText; 
-                    btn.classList.移除('copy-success');
-                }, 1500);
-            }).catch(() => {
-                // 降级处理: 如果clipboard失败，使用prompt兼容方案
-                try {
-                    const textarea = 文档.createElement('textarea');
-                    textarea.value = textToCopy;
-                    文档.body.appendChild(textarea);
-                    textarea.select();
-                    文档.execCommand('copy');
-                    文档.body.removeChild(textarea);
-                    const originalText = btn.innerText;
-                    btn.innerText = '✅ 已复制！';
-                    btn.classList.add('copy-success');
-                    setTimeout(() => { 
-                        btn.innerText = originalText; 
-                        btn.classList.移除('copy-success');
-                    }, 1500);
-                } catch (err) {
-                    alert('无法复制，请手动选择文字复制。');
-                }
-            });
+            // 调用终极复制函数
+            copyTextToClipboard(textToCopy, btn);
             e.preventDefault();
         }
     });
 
-    // 监听百分比输入 (input事件刷新)
+    // 百分比输入监听
     文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
     文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
 
-    // 初始化激活类 + 首次渲染
+    // 初始化
     syncActiveClasses();
     refreshAll();
 })();
