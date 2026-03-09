@@ -568,41 +568,41 @@ html_code = '''<!DOCTYPE html>
         }
         
         if (copyBtn) {
-            var type = copyBtn.getAttribute('data-copy');
-            var previewId = type === 'newbie' ? 'newbiePreview' : 'inviterPreview';
-            var text = document.getElementById(previewId).innerText;
+            var 输入  = copyBtn.getAttribute('data-copy');
+            var previewId = 输入  === 'newbie' ? 'newbiePreview' : 'inviterPreview';
+            var 文本 = 文档.getElementById(previewId).innerText;
             
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).then(function() {
+                navigator.clipboard.writeText(文本).then(function() {
                     var originalText = copyBtn.innerText;
                     copyBtn.innerText = '✅ 已复制！';
                     copyBtn.classList.add('copy-success');
                     setTimeout(function() { 
                         copyBtn.innerText = originalText; 
-                        copyBtn.classList.remove('copy-success');
+                        copyBtn.classList.移除('copy-success');
                     }, 1500);
                 }).catch(function() {
                     alert('复制失败，请手动复制');
                 });
             } else {
                 // 降级方案
-                var textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
+                var textArea = 文档.createElement('textarea');
+                textArea.value = 文本;
+                文档.body.appendChild(textArea);
                 textArea.select();
                 try {
-                    document.execCommand('copy');
+                    文档.execCommand('copy');
                     var originalText = copyBtn.innerText;
                     copyBtn.innerText = '✅ 已复制！';
                     copyBtn.classList.add('copy-success');
                     setTimeout(function() { 
                         copyBtn.innerText = originalText; 
-                        copyBtn.classList.remove('copy-success');
+                        copyBtn.classList.移除('copy-success');
                     }, 1500);
                 } catch (err) {
                     alert('复制失败，请手动复制');
                 }
-                document.body.removeChild(textArea);
+                文档.body.removeChild(textArea);
             }
             e.preventDefault();
         }
@@ -612,8 +612,8 @@ html_code = '''<!DOCTYPE html>
     container.addEventListener('click', handleClick);
 
     // 监听百分比输入
-    document.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
-    document.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
+    文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
+    文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
 
     // 初始化
     syncActiveClasses();
@@ -621,80 +621,4 @@ html_code = '''<!DOCTYPE html>
 })();
 </script>
 </body>
-</html>'''
-
-# 保存主文件
-with open('/mnt/kimi/output/index.html', 'w', encoding='utf-8') as f:
-    f.write(html_code)
-
-# 创建 .nojekyll 文件说明
-nojekyll_note = '''# GitHub Pages 部署说明
-
-## 重要步骤
-
-1. **创建 .nojekyll 文件**
-   在仓库根目录下创建一个名为 `.nojekyll` 的空文件（注意前面有个点）：
-   
-   ```bash
-   touch .nojekyll
-   git add .nojekyll
-   git commit -m "Add .nojekyll to disable Jekyll"
-   git push
-   ```
-   
-   或者直接在 GitHub 网页上创建新文件，命名为 `.nojekyll`
-
-2. **确保 index.html 在根目录**
-   文件结构应该是：
-   ```
-   your-repo/
-   ├── .nojekyll
-   ├── index.html
-   └── README.md (可选)
-   ```
-
-3. **GitHub Pages 设置**
-   - 进入仓库 Settings -> Pages
-   - Source 选择 "Deploy from a branch"
-   - Branch 选择 "main" 或 "master"，文件夹选择 "/ (root)"
-   - 点击 Save
-
-## 为什么需要 .nojekyll？
-
-GitHub Pages 默认使用 Jekyll 构建工具，它会忽略以下划线开头的文件和文件夹。
-如果你的项目包含以下划线开头的资源（如 `_next`、`_static` 等），这些文件会被忽略，
-导致 CSS/JS 无法加载。
-
-创建 `.nojekyll` 文件会告诉 GitHub Pages **跳过 Jekyll 处理**，直接按原样部署文件。
-
-## 常见问题
-
-1. **更改未生效？**
-   - 等待 2-5 分钟让 GitHub Pages 重新部署
-   - 清除浏览器缓存（Ctrl+F5 或 Cmd+Shift+R）
-   - 检查浏览器控制台是否有 404 错误
-
-2. **路径问题**
-   - 如果是项目页面（username.github.io/repo-name/），需要确保资源路径是相对路径
-   - 本代码已使用相对路径，无需修改
-
-3. **MIME 类型错误**
-   - 确保文件扩展名正确（.html 而不是 .htm）
-   - 确保文件编码是 UTF-8
-'''
-
-with open('/mnt/kimi/output/DEPLOY_GUIDE.md', 'w', encoding='utf-8') as f:
-    f.write(nojekyll_note)
-
-print("✅ 已生成 GitHub Pages 优化版本")
-print("\n📦 文件清单：")
-print("1. index.html - 主页面（已优化兼容性）")
-print("2. DEPLOY_GUIDE.md - 部署指南")
-print("\n🔧 主要修改：")
-print("- 使用标准 ES5 语法（避免箭头函数、const/let、模板字符串等）")
-print("- 移除可选链操作符 (?.)，使用传统方式检查 parentElement")
-print("- 添加降级复制方案（兼容旧浏览器）")
-print("- 使用 parentElement 替代 closest() 提高兼容性")
-print("\n⚠️  关键步骤：")
-print("上传代码后，必须在仓库根目录创建 .nojekyll 空文件！")
-print("否则 GitHub Pages 会忽略某些文件导致功能失效。")
+</html>
