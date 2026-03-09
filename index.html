@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+'''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta 名称="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>傻瓜式操作 · 三语同步｜双面板 (123123)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -16,7 +17,7 @@
             justify-content: center;
             padding: 2rem 1rem;
         }
-        。container {
+        .container {
             max-width: 1450px;
             width: 100%;
         }
@@ -273,7 +274,7 @@
             </div>
             <div class="extra-row">
                 <label>🎁 额外奖励 %</label>
-                <input type="number" id="newbieExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
+                <input 输入 ="number" id="newbieExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
             </div>
             <div class="lang-copy-row">
                 <div class="lang-btn-group" data-group="newbieLang">
@@ -305,7 +306,7 @@
             </div>
             <div class="extra-row">
                 <label>🎁 额外奖励 %</label>
-                <input type="number" id="inviterExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
+                <input 输入 ="number" id="inviterExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
             </div>
             <div class="lang-copy-row">
                 <div class="lang-btn-group" data-group="inviterLang">
@@ -388,21 +389,21 @@
     }
 
     function getNewbieExtraPercent() {
-        var val = document.getElementById('newbieExtraPercent').value;
+        var val = 文档.getElementById('newbieExtraPercent').value;
         return parseFloat(val) || 0;
     }
     
     function getInviterExtraPercent() {
-        var val = document.getElementById('inviterExtraPercent').value;
+        var val = 文档.getElementById('inviterExtraPercent').value;
         return parseFloat(val) || 0;
     }
 
     // 生成新员工话术
     function generateNewbieSpeech() {
-        var data = levelData[state.newbieLevel];
+        var 数据 = levelData[state.newbieLevel];
         var level = state.newbieLevel;
         var extraPercent = getNewbieExtraPercent();
-        var extraAmount = (extraPercent / 100) * data.price;
+        var extraAmount = (extraPercent / 100) * 数据.price;
         var bonusLine = '';
         
         if (extraPercent > 0) {
@@ -410,13 +411,13 @@
         }
 
         if (state.newbieLang === 'cn') {
-            return '🎉 恭喜您！ 您已成功晋升至 ' + level + ' 等级！ ' + bonusLine + '\n\n这是您迈向稳健财富增长的重要第一步！ 📈 收入一览 每日固定收益：RM' + data.daily + ' 每月累计：RM' + data.monthly + ' 每年累计：RM' + data.yearly.toLocaleString() + '\n\n为了让您的收入潜力更上一层楼，我们已为您全面开启： ✅ 更多合作伙伴邀请权限 ✅ 专属农耕投资机会\n\n未来，您将与RS、与团队一起，创造更多协同收益，实现资产持续增长。\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\n继续加油，我们一起把小溪变成大河！🚀';
+            return '🎉 恭喜您！ 您已成功晋升至 ' + level + ' 等级！ ' + bonusLine + '\n\n这是您迈向稳健财富增长的重要第一步！ 📈 收入一览 每日固定收益：RM' + 数据.daily + ' 每月累计：RM' + 数据.monthly + ' 每年累计：RM' + 数据.yearly.toLocaleString() + '\n\n为了让您的收入潜力更上一层楼，我们已为您全面开启： ✅ 更多合作伙伴邀请权限 ✅ 专属农耕投资机会\n\n未来，您将与RS、与团队一起，创造更多协同收益，实现资产持续增长。\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\n继续加油，我们一起把小溪变成大河！🚀';
         } else if (state.newbieLang === 'en') {
             var enBonusLine = extraPercent > 0 ? 'New member bonus of RM' + extraAmount.toFixed(2) + ' has been credited to your RS account. Please check it out～' : '';
-            return '🎉 Congratulations! You have successfully advanced to level ' + level + '! ' + enBonusLine + '\n\nThis is your important first step toward steady wealth growth! 📈 Income Overview Daily fixed income: RM' + data.daily + ' Monthly total: RM' + data.monthly + ' Annual total: RM' + data.yearly.toLocaleString() + '\n\nTo further enhance your income potential, we have fully unlocked for you: ✅ More partner invitation privileges ✅ Exclusive farming investment opportunities\n\nIn the future, you will work with RS and the team to create more synergistic returns and achieve sustained asset growth.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nKeep going, together we turn streams into rivers! 🚀';
+            return '🎉 Congratulations! You have successfully advanced to level ' + level + '! ' + enBonusLine + '\n\nThis is your important first step toward steady wealth growth! 📈 Income Overview Daily fixed income: RM' + 数据.daily + ' Monthly total: RM' + 数据.monthly + ' Annual total: RM' + 数据.yearly.toLocaleString() + '\n\nTo further enhance your income potential, we have fully unlocked for you: ✅ More partner invitation privileges ✅ Exclusive farming investment opportunities\n\nIn the future, you will work with RS and the team to create more synergistic returns and achieve sustained asset growth.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nKeep going, together we turn streams into rivers! 🚀';
         } else {
             var myBonusLine = extraPercent > 0 ? 'Bonus ahli baru RM' + extraAmount.toFixed(2) + ' telah dikreditkan ke akaun RS anda. Sila semak～' : '';
-            return '🎉 Tahniah! Anda telah berjaya naik ke tahap ' + level + '! ' + myBonusLine + '\n\nIni adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! 📈 Ringkasan Pendapatan Pendapatan harian tetap: RM' + data.daily + ' Jumlah bulanan: RM' + data.monthly + ' Jumlah tahunan: RM' + data.yearly.toLocaleString() + '\n\nUntuk meningkatkan potensi pendapatan anda, kami telah membuka sepenuhnya: ✅ Lebih banyak keistimewaan jemputan rakan kongsi ✅ Peluang pelaburan pertanian eksklusif\n\nPada masa hadapan, anda akan bekerjasama dengan RS dan pasukan untuk menjana lebih banyak pulangan sinergi dan mencapai pertumbuhan aset yang berterusan.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nTerus maju, kita jadikan anak sungai sebagai sungai besar! 🚀';
+            return '🎉 Tahniah! Anda telah berjaya naik ke tahap ' + level + '! ' + myBonusLine + '\n\nIni adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! 📈 Ringkasan Pendapatan Pendapatan harian tetap: RM' + 数据.daily + ' Jumlah bulanan: RM' + 数据.monthly + ' Jumlah tahunan: RM' + 数据.yearly.toLocaleString() + '\n\nUntuk meningkatkan potensi pendapatan anda, kami telah membuka sepenuhnya: ✅ Lebih banyak keistimewaan jemputan rakan kongsi ✅ Peluang pelaburan pertanian eksklusif\n\nPada masa hadapan, anda akan bekerjasama dengan RS dan pasukan untuk menjana lebih banyak pulangan sinergi dan mencapai pertumbuhan aset yang berterusan.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nTerus maju, kita jadikan anak sungai sebagai sungai besar! 🚀';
         }
     }
 
@@ -461,9 +462,9 @@
 
     // 刷新所有预览
     function refreshAll() {
-        document.getElementById('newbiePreview').innerText = generateNewbieSpeech();
-        document.getElementById('inviterPreview').innerText = generateInviterSpeech();
-        var ruleEl = document.getElementById('globalRule');
+        文档.getElementById('newbiePreview').innerText = generateNewbieSpeech();
+        文档.getElementById('inviterPreview').innerText = generateInviterSpeech();
+        var ruleEl = 文档.getElementById('globalRule');
         if (hasDailyCommission()) {
             ruleEl.innerText = '✅ 邀请者等级 ≥ 新员工 → 显示每日3%佣金段落';
         } else {
@@ -491,29 +492,29 @@
             if (btn.dataset.value === state.inviterLevel) {
                 btn.classList.add('active');
             } else {
-                btn.classList.remove('active');
+                btn.classList.移除('active');
             }
         }
         
         // 新员工语言
-        var newbieLangBtns = document.querySelectorAll('[data-group="newbieLang"] .lang-btn');
+        var newbieLangBtns = 文档.querySelectorAll('[data-group="newbieLang"] .lang-btn');
         for (var i = 0; i < newbieLangBtns.length; i++) {
             var btn = newbieLangBtns[i];
             if (btn.dataset.value === state.newbieLang) {
                 btn.classList.add('active');
             } else {
-                btn.classList.remove('active');
+                btn.classList.移除('active');
             }
         }
         
         // 邀请者语言
-        var inviterLangBtns = document.querySelectorAll('[data-group="inviterLang"] .lang-btn');
+        var inviterLangBtns = 文档.querySelectorAll('[data-group="inviterLang"] .lang-btn');
         for (var i = 0; i < inviterLangBtns.length; i++) {
             var btn = inviterLangBtns[i];
             if (btn.dataset.value === state.inviterLang) {
                 btn.classList.add('active');
             } else {
-                btn.classList.remove('active');
+                btn.classList.移除('active');
             }
         }
     }
@@ -564,7 +565,7 @@
             var 文本 = 文档.getElementById(previewId).innerText;
             
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(文本).then(function() {
+                navigator.clipboard.writeText(文本)。then(function() {
                     var originalText = copyBtn.innerText;
                     copyBtn.innerText = '✅ 已复制！';
                     copyBtn.classList.add('copy-success');
@@ -603,7 +604,7 @@
     container.addEventListener('click', handleClick);
 
     // 监听百分比输入
-    文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
+    文档。getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
     文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
 
     // 初始化
@@ -612,4 +613,4 @@
 })();
 </script>
 </body>
-</html>
+</html>'''
