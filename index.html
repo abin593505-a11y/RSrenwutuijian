@@ -305,7 +305,7 @@
                 </div>
             </div>
             <div class="extra-row">
-                <label>🎁 额外奖励 %</label>
+                <label>🎁 额外奖励 %（基于新员工等级）</label>
                 <input type="number" id="inviterExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
             </div>
             <div class="lang-copy-row">
@@ -426,17 +426,18 @@
         var bonusAmount = getReferralBonus();
         var eligible = hasDailyCommission();
         var extraPercent = getInviterExtraPercent();
-        var inviterPrice = levelData[state.inviterLevel].price;
-        var extraAmount = (extraPercent / 100) * inviterPrice;
+        // 优化：使用新员工等级价格计算额外奖励
+        var newbiePrice = levelData[state.newbieLevel].price;
+        var extraAmount = (extraPercent / 100) * newbiePrice;
         
         var extraBonusLineCn = '';
         var extraBonusLineEn = '';
         var extraBonusLineMy = '';
         
         if (extraPercent > 0) {
-            extraBonusLineCn = '✅ 额外奖金 RM' + extraAmount.toFixed(2) + '\n';
-            extraBonusLineEn = '✅ Extra bonus RM' + extraAmount.toFixed(2) + '\n';
-            extraBonusLineMy = '✅ Bonus tambahan RM' + extraAmount.toFixed(2) + '\n';
+            extraBonusLineCn = '✅ 额外奖金 RM' + extraAmount.toFixed(2) + '（基于' + state.newbieLevel + '等级）\n';
+            extraBonusLineEn = '✅ Extra bonus RM' + extraAmount.toFixed(2) + ' (based on ' + state.newbieLevel + ' level)\n';
+            extraBonusLineMy = '✅ Bonus tambahan RM' + extraAmount.toFixed(2) + ' (berdasarkan tahap ' + state.newbieLevel + ')\n';
         }
         
         var totalBonus = (parseFloat(bonusAmount) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2);
@@ -557,41 +558,41 @@
         }
         
         if (copyBtn) {
-            var type = copyBtn.getAttribute('data-copy');
-            var previewId = type === 'newbie' ? 'newbiePreview' : 'inviterPreview';
-            var text = document.getElementById(previewId).innerText;
+            var 输入  = copyBtn.getAttribute('data-copy');
+            var previewId = 输入  === 'newbie' ? 'newbiePreview' : 'inviterPreview';
+            var 文本 = 文档.getElementById(previewId).innerText;
             
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).then(function() {
+                navigator.clipboard.writeText(文本).键，然后(function() {
                     var originalText = copyBtn.innerText;
                     copyBtn.innerText = '✅ 已复制！';
                     copyBtn.classList.add('copy-success');
                     setTimeout(function() { 
                         copyBtn.innerText = originalText; 
-                        copyBtn.classList.remove('copy-success');
+                        copyBtn.classList.移除('copy-success');
                     }, 1500);
                 }).catch(function() {
                     alert('复制失败，请手动复制');
                 });
             } else {
                 // 降级方案 (旧浏览器)
-                var textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
+                var textArea = 文档.createElement('textarea');
+                textArea.value = 文本;
+                文档.body.appendChild(textArea);
                 textArea.select();
                 try {
-                    document.execCommand('copy');
+                    文档.execCommand('copy');
                     var originalText = copyBtn.innerText;
                     copyBtn.innerText = '✅ 已复制！';
                     copyBtn.classList.add('copy-success');
                     setTimeout(function() { 
                         copyBtn.innerText = originalText; 
-                        copyBtn.classList.remove('copy-success');
+                        copyBtn.classList.移除('copy-success');
                     }, 1500);
                 } catch (err) {
                     alert('复制失败，请手动复制');
                 }
-                document.body.removeChild(textArea);
+                文档.body.removeChild(textArea);
             }
             e.preventDefault();
         }
@@ -601,8 +602,8 @@
     container.addEventListener('click', handleClick);
 
     // 监听百分比输入 (输入时实时刷新)
-    document.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
-    document.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
+    文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
+    文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
 
     // 启动
     syncActiveClasses();
