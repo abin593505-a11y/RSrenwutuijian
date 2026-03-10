@@ -343,7 +343,6 @@
     </div>
 </div>
 
-<!-- 使用最保守的 ES5 语法，无模板字符串、箭头函数、无下划线路径 -->
 <script>
 (function() {
     'use strict';
@@ -517,17 +516,22 @@
         }
     }
 
-    // 事件处理：利用事件委托
+    // 事件处理：利用事件委托 - 修复版使用 closest() 方法
     function handleClick(e) {
         var target = e.target;
         
-        // 等级按钮
-        if (target.classList.contains('level-option')) {
-            var group = target.parentElement.getAttribute('data-group');
+        // 使用 closest 查找最近的匹配元素，处理点击按钮内部文本的情况
+        var levelBtn = target.closest('.level-option');
+        var langBtn = target.closest('.lang-btn');
+        var copyBtn = target.closest('.copy-btn-icon');
+        
+        // 等级按钮点击
+        if (levelBtn) {
+            var group = levelBtn.parentElement.getAttribute('data-group');
             if (group === 'newbieLevel') {
-                state.newbieLevel = target.getAttribute('data-value');
+                state.newbieLevel = levelBtn.getAttribute('data-value');
             } else if (group === 'inviterLevel') {
-                state.inviterLevel = target.getAttribute('data-value');
+                state.inviterLevel = levelBtn.getAttribute('data-value');
             }
             syncActiveClasses();
             refreshAll();
@@ -535,13 +539,13 @@
             return;
         }
         
-        // 语言按钮
-        if (target.classList.contains('lang-btn')) {
-            var group = target.parentElement.getAttribute('data-group');
+        // 语言按钮点击
+        if (langBtn) {
+            var group = langBtn.parentElement.getAttribute('data-group');
             if (group === 'newbieLang') {
-                state.newbieLang = target.getAttribute('data-value');
+                state.newbieLang = langBtn.getAttribute('data-value');
             } else if (group === 'inviterLang') {
-                state.inviterLang = target.getAttribute('data-value');
+                state.inviterLang = langBtn.getAttribute('data-value');
             }
             syncActiveClasses();
             refreshAll();
@@ -549,14 +553,7 @@
             return;
         }
         
-        // 复制按钮 (处理图标点击和文字点击)
-        var copyBtn = null;
-        if (target.classList.contains('copy-btn-icon')) {
-            copyBtn = target;
-        } else if (target.parentElement && target.parentElement.classList.contains('copy-btn-icon')) {
-            copyBtn = target.parentElement;
-        }
-        
+        // 复制按钮点击
         if (copyBtn) {
             var 输入  = copyBtn.getAttribute('data-copy');
             var previewId = 输入  === 'newbie' ? 'newbiePreview' : 'inviterPreview';
@@ -610,6 +607,5 @@
     refreshAll();
 })();
 </script>
-<!-- 没有任何下划线开头的文件引用，完全兼容 GitHub Pages 且无需 Jekyll -->
 </body>
 </html>
