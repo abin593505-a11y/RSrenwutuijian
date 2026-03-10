@@ -249,7 +249,6 @@
             margin: 25px 0 10px;
         }
     </style>
-<base target="_blank">
 </head>
 <body>
 <div class="container" id="appContainer">
@@ -399,34 +398,39 @@
         return parseFloat(val) || 0;
     }
 
-    // ---------- 生成话术 ----------
+    // 加粗包装函数
+    function bold(text) {
+        return '**' + text + '**';
+    }
+
+    // ---------- 生成话术（加粗版）----------
     function generateNewbieSpeech() {
         var data = levelData[state.newbieLevel];
-        var level = state.newbieLevel;
+        var level = bold(state.newbieLevel);
         var extraPercent = getNewbieExtraPercent();
         var extraAmount = (extraPercent / 100) * data.price;
         var bonusLine = '';
         
         if (extraPercent > 0) {
-            bonusLine = '新员工奖金 RM' + extraAmount.toFixed(2) + ' 已顺利存入您的 RS 账户，请注意查收～';
+            bonusLine = '新员工奖金 ' + bold('RM' + extraAmount.toFixed(2)) + ' 已顺利存入您的 RS 账户，请注意查收～';
         }
 
         if (state.newbieLang === 'cn') {
-            return '🎉 恭喜您！ 您已成功晋升至 ' + level + ' 等级！ ' + bonusLine + '\n\n这是您迈向稳健财富增长的重要第一步！ 📈 收入一览 每日固定收益：RM' + data.daily + ' 每月累计：RM' + data.monthly + ' 每年累计：RM' + data.yearly.toLocaleString() + '\n\n为了让您的收入潜力更上一层楼，我们已为您全面开启： ✅ 更多合作伙伴邀请权限 ✅ 专属农耕投资机会\n\n未来，您将与RS、与团队一起，创造更多协同收益，实现资产持续增长。\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\n继续加油，我们一起把小溪变成大河！🚀';
+            return '🎉 恭喜您！ 您已成功晋升至 ' + level + ' 等级！ ' + bonusLine + '\n\n这是您迈向稳健财富增长的重要第一步！ 📈 收入一览 每日固定收益：' + bold('RM' + data.daily) + ' 每月累计：' + bold('RM' + data.monthly) + ' 每年累计：' + bold('RM' + data.yearly.toLocaleString()) + '\n\n为了让您的收入潜力更上一层楼，我们已为您全面开启： ✅ 更多合作伙伴邀请权限 ✅ 专属农耕投资机会\n\n未来，您将与RS、与团队一起，创造更多协同收益，实现资产持续增长。\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\n继续加油，我们一起把小溪变成大河！🚀';
         } else if (state.newbieLang === 'en') {
-            var enBonusLine = extraPercent > 0 ? 'New member bonus of RM' + extraAmount.toFixed(2) + ' has been credited to your RS account. Please check it out～' : '';
-            return '🎉 Congratulations! You have successfully advanced to level ' + level + '! ' + enBonusLine + '\n\nThis is your important first step toward steady wealth growth! 📈 Income Overview Daily fixed income: RM' + data.daily + ' Monthly total: RM' + data.monthly + ' Annual total: RM' + data.yearly.toLocaleString() + '\n\nTo further enhance your income potential, we have fully unlocked for you: ✅ More partner invitation privileges ✅ Exclusive farming investment opportunities\n\nIn the future, you will work with RS and the team to create more synergistic returns and achieve sustained asset growth.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nKeep going, together we turn streams into rivers! 🚀';
+            var enBonusLine = extraPercent > 0 ? 'New member bonus of ' + bold('RM' + extraAmount.toFixed(2)) + ' has been credited to your RS account. Please check it out～' : '';
+            return '🎉 Congratulations! You have successfully advanced to level ' + level + '! ' + enBonusLine + '\n\nThis is your important first step toward steady wealth growth! 📈 Income Overview Daily fixed income: ' + bold('RM' + data.daily) + ' Monthly total: ' + bold('RM' + data.monthly) + ' Annual total: ' + bold('RM' + data.yearly.toLocaleString()) + '\n\nTo further enhance your income potential, we have fully unlocked for you: ✅ More partner invitation privileges ✅ Exclusive farming investment opportunities\n\nIn the future, you will work with RS and the team to create more synergistic returns and achieve sustained asset growth.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nKeep going, together we turn streams into rivers! 🚀';
         } else {
-            var myBonusLine = extraPercent > 0 ? 'Bonus ahli baru RM' + extraAmount.toFixed(2) + ' telah dikreditkan ke akaun RS anda. Sila semak～' : '';
-            return '🎉 Tahniah! Anda telah berjaya naik ke tahap ' + level + '! ' + myBonusLine + '\n\nIni adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! 📈 Ringkasan Pendapatan Pendapatan harian tetap: RM' + data.daily + ' Jumlah bulanan: RM' + data.monthly + ' Jumlah tahunan: RM' + data.yearly.toLocaleString() + '\n\nUntuk meningkatkan potensi pendapatan anda, kami telah membuka sepenuhnya: ✅ Lebih banyak keistimewaan jemputan rakan kongsi ✅ Peluang pelaburan pertanian eksklusif\n\nPada masa hadapan, anda akan bekerjasama dengan RS dan pasukan untuk menjana lebih banyak pulangan sinergi dan mencapai pertumbuhan aset yang berterusan.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nTerus maju, kita jadikan anak sungai sebagai sungai besar! 🚀';
+            var myBonusLine = extraPercent > 0 ? 'Bonus ahli baru ' + bold('RM' + extraAmount.toFixed(2)) + ' telah dikreditkan ke akaun RS anda. Sila semak～' : '';
+            return '🎉 Tahniah! Anda telah berjaya naik ke tahap ' + level + '! ' + myBonusLine + '\n\nIni adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! 📈 Ringkasan Pendapatan Pendapatan harian tetap: ' + bold('RM' + data.daily) + ' Jumlah bulanan: ' + bold('RM' + data.monthly) + ' Jumlah tahunan: ' + bold('RM' + data.yearly.toLocaleString()) + '\n\nUntuk meningkatkan potensi pendapatan anda, kami telah membuka sepenuhnya: ✅ Lebih banyak keistimewaan jemputan rakan kongsi ✅ Peluang pelaburan pertanian eksklusif\n\nPada masa hadapan, anda akan bekerjasama dengan RS dan pasukan untuk menjana lebih banyak pulangan sinergi dan mencapai pertumbuhan aset yang berterusan.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nTerus maju, kita jadikan anak sungai sebagai sungai besar! 🚀';
         }
     }
 
     function generateInviterSpeech() {
-        var bonusAmount = getReferralBonus();
+        var bonusAmount = bold('RM' + getReferralBonus());
         var eligible = hasDailyCommission();
         var extraPercent = getInviterExtraPercent();
-        // 优化：使用新员工等级价格计算额外奖励
+        // 使用新员工等级价格计算额外奖励
         var newbiePrice = levelData[state.newbieLevel].price;
         var extraAmount = (extraPercent / 100) * newbiePrice;
         
@@ -435,29 +439,29 @@
         var extraBonusLineMy = '';
         
         if (extraPercent > 0) {
-            extraBonusLineCn = *'✅ 额外奖金 RM' + extraAmount.toFixed(2) + '（基于' + state.newbieLevel + '等级）\n'*;
-            extraBonusLineEn = *'✅ Extra bonus RM' + extraAmount.toFixed(2) + ' (based on ' + state.newbieLevel + ' level)\n'*;
-            extraBonusLineMy = *'✅ Bonus tambahan RM' + extraAmount.toFixed(2) + ' (berdasarkan tahap ' + state.newbieLevel + ')\n'*;
+            extraBonusLineCn = '✅ 额外奖金 ' + bold('RM' + extraAmount.toFixed(2)) + '（基于' + bold(state.newbieLevel) + '等级）\n';
+            extraBonusLineEn = '✅ Extra bonus ' + bold('RM' + extraAmount.toFixed(2)) + ' (based on ' + bold(state.newbieLevel) + ' level)\n';
+            extraBonusLineMy = '✅ Bonus tambahan ' + bold('RM' + extraAmount.toFixed(2)) + ' (berdasarkan tahap ' + bold(state.newbieLevel) + ')\n';
         }
         
-        var totalBonus = (parseFloat(bonusAmount) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2);
+        var totalBonus = bold('RM' + (parseFloat(getReferralBonus()) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2));
 
         var commissionParagraphCn = '';
         var commissionParagraphEn = '';
         var commissionParagraphMy = '';
         
         if (eligible) {
-            commissionParagraphCn = '更令人期待的是——\n未来您将持续享有下属每日 3% 的工作佣金！\n';
-            commissionParagraphEn = "What's more exciting——\nYou will continue to enjoy 3% daily commission from your subordinates in the future!\n";
-            commissionParagraphMy = 'Yang lebih menarik——\nAnda akan terus menikmati komisen harian 3% daripada bawahan pada masa hadapan!\n';
+            commissionParagraphCn = '更令人期待的是——\n未来您将持续享有下属每日 ' + bold('3%') + ' 的工作佣金！\n';
+            commissionParagraphEn = "What's more exciting——\nYou will continue to enjoy " + bold('3%') + " daily commission from your subordinates in the future!\n";
+            commissionParagraphMy = 'Yang lebih menarik——\nAnda akan terus menikmati komisen harian ' + bold('3%') + ' daripada bawahan pada masa hadapan!\n';
         }
 
         if (state.inviterLang === 'cn') {
-            return '🎉 恭喜！\n您已成功邀请一位 *' + state.newbieLevel + '* 级合作伙伴 加入 RS 大家庭，全新成长之旅正式启航！\n\n本次邀请，您已获得：*\n✅ 推荐奖励 RM' + bonusAmount + '\n' + extraBonusLineCn + '总计奖励 RM' + totalBonus + '* 已全部到账，存入您的 RS 账户，请注意查收！\n\n' + commissionParagraphCn + '每一份努力，都将转化为源源不断的被动收益与团队成长动力。\n一人闪耀是星火，众人齐心是烈焰。\n感谢您的主动拓展与真诚引荐，这份成就，正是您眼光与行动力的最好见证。\n让我们继续携手并肩，与团队一起奔向更广阔的未来！\n因为有您，团队更强大；因为有您，前路更光明！🚀\n继续向前，未来可期！';
+            return '🎉 恭喜！\n您已成功邀请一位 ' + bold(state.newbieLevel) + ' 级合作伙伴 加入 RS 大家庭，全新成长之旅正式启航！\n\n本次邀请，您已获得：\n✅ 推荐奖励 ' + bonusAmount + '\n' + extraBonusLineCn + '总计奖励 ' + totalBonus + ' 已全部到账，存入您的 RS 账户，请注意查收！\n\n' + commissionParagraphCn + '每一份努力，都将转化为源源不断的被动收益与团队成长动力。\n一人闪耀是星火，众人齐心是烈焰。\n感谢您的主动拓展与真诚引荐，这份成就，正是您眼光与行动力的最好见证。\n让我们继续携手并肩，与团队一起奔向更广阔的未来！\n因为有您，团队更强大；因为有您，前路更光明！🚀\n继续向前，未来可期！';
         } else if (state.inviterLang === 'en') {
-            return '🎉 Congratulations!\nYou have successfully invited a *' + state.newbieLevel + '* partner to join the RS family. A new journey of growth officially begins!\n\nIn this invitation, you have received:*\n✅ Referral bonus RM' + bonusAmount + '\n' + extraBonusLineEn + 'Total reward RM' + totalBonus + '* has been credited to your RS account. Please check it out!\n\n' + commissionParagraphEn + 'Every effort will be transformed into a continuous stream of passive income and team growth momentum.\nOne spark, a blazing fire.\nThank you for your initiative and sincere invitation. This achievement is the best proof of your vision and action.\nLet us continue to work hand in hand and rush towards a broader future together!\nBecause of you, the team is stronger; because of you, the future is brighter! 🚀\nMove forward, the future is promising!';
+            return '🎉 Congratulations!\nYou have successfully invited a ' + bold(state.newbieLevel) + ' partner to join the RS family. A new journey of growth officially begins!\n\nIn this invitation, you have received:\n✅ Referral bonus ' + bonusAmount + '\n' + extraBonusLineEn + 'Total reward ' + totalBonus + ' has been credited to your RS account. Please check it out!\n\n' + commissionParagraphEn + 'Every effort will be transformed into a continuous stream of passive income and team growth momentum.\nOne spark, a blazing fire.\nThank you for your initiative and sincere invitation. This achievement is the best proof of your vision and action.\nLet us continue to work hand in hand and rush towards a broader future together!\nBecause of you, the team is stronger; because of you, the future is brighter! 🚀\nMove forward, the future is promising!';
         } else {
-            return '🎉 Tahniah!\nAnda telah berjaya menjemput rakan kongsi tahap *' + state.newbieLevel + '* menyertai keluarga RS. Perjalanan pertumbuhan baharu secara rasmi bermula!\n\nDalam jemputan ini, anda telah menerima:*\n✅ Bonus rujukan RM' + bonusAmount + '\n' + extraBonusLineMy + 'Jumlah ganjaran RM' + totalBonus + '* telah dikreditkan ke akaun RS anda. Sila semak!\n\n' + commissionParagraphMy + 'Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.\nSatu percikan, api yang marak.\nTerima kasih atas inisiatif dan jemputan ikhlas anda. Pencapaian ini adalah bukti terbaik visi dan tindakan anda.\nMari kita terus bekerjasama dan melangkah ke arah masa depan yang lebih cerah!\nKerana anda, pasukan lebih kuat; kerana anda, masa depan lebih cerah! 🚀\nTerus maju, masa depan menanti!';
+            return '🎉 Tahniah!\nAnda telah berjaya menjemput rakan kongsi tahap ' + bold(state.newbieLevel) + ' menyertai keluarga RS. Perjalanan pertumbuhan baharu secara rasmi bermula!\n\nDalam jemputan ini, anda telah menerima:\n✅ Bonus rujukan ' + bonusAmount + '\n' + extraBonusLineMy + 'Jumlah ganjaran ' + totalBonus + ' telah dikreditkan ke akaun RS anda. Sila semak!\n\n' + commissionParagraphMy + 'Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.\nSatu percikan, api yang marak.\nTerima kasih atas inisiatif dan jemputan ikhlas anda. Pencapaian ini adalah bukti terbaik visi dan tindakan anda.\nMari kita terus bekerjasama dan melangkah ke arah masa depan yang lebih cerah!\nKerana anda, pasukan lebih kuat; kerana anda, masa depan lebih cerah! 🚀\nTerus maju, masa depan menanti!';
         }
     }
 
