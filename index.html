@@ -435,9 +435,9 @@
         var extraBonusLineMy = '';
         
         if (extraPercent > 0) {
-            extraBonusLineCn = '✅ 额外奖金 RM' + extraAmount.toFixed(2) + '（基于' + state.newbieLevel + '等级）\n';
-            extraBonusLineEn = '✅ Extra bonus RM' + extraAmount.toFixed(2) + ' (based on ' + state.newbieLevel + ' level)\n';
-            extraBonusLineMy = '✅ Bonus tambahan RM' + extraAmount.toFixed(2) + ' (berdasarkan tahap ' + state.newbieLevel + ')\n';
+            extraBonusLineCn = *'✅ 额外奖金 RM' + extraAmount.toFixed(2) + '（基于' + state.newbieLevel + '等级）\n'*;
+            extraBonusLineEn = *'✅ Extra bonus RM' + extraAmount.toFixed(2) + ' (based on ' + state.newbieLevel + ' level)\n'*;
+            extraBonusLineMy = *'✅ Bonus tambahan RM' + extraAmount.toFixed(2) + ' (berdasarkan tahap ' + state.newbieLevel + ')\n'*;
         }
         
         var totalBonus = (parseFloat(bonusAmount) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2);
@@ -453,11 +453,11 @@
         }
 
         if (state.inviterLang === 'cn') {
-            return '🎉 恭喜！\n您已成功邀请一位 ' + state.newbieLevel + ' 级合作伙伴 加入 RS 大家庭，全新成长之旅正式启航！\n\n本次邀请，您已获得：\n✅ 推荐奖励 RM' + bonusAmount + '\n' + extraBonusLineCn + '总计奖励 RM' + totalBonus + ' 已全部到账，存入您的 RS 账户，请注意查收！\n\n' + commissionParagraphCn + '每一份努力，都将转化为源源不断的被动收益与团队成长动力。\n一人闪耀是星火，众人齐心是烈焰。\n感谢您的主动拓展与真诚引荐，这份成就，正是您眼光与行动力的最好见证。\n让我们继续携手并肩，与团队一起奔向更广阔的未来！\n因为有您，团队更强大；因为有您，前路更光明！🚀\n继续向前，未来可期！';
+            return '🎉 恭喜！\n您已成功邀请一位 *' + state.newbieLevel + '* 级合作伙伴 加入 RS 大家庭，全新成长之旅正式启航！\n\n本次邀请，您已获得：*\n✅ 推荐奖励 RM' + bonusAmount + '\n' + extraBonusLineCn + '总计奖励 RM' + totalBonus + '* 已全部到账，存入您的 RS 账户，请注意查收！\n\n' + commissionParagraphCn + '每一份努力，都将转化为源源不断的被动收益与团队成长动力。\n一人闪耀是星火，众人齐心是烈焰。\n感谢您的主动拓展与真诚引荐，这份成就，正是您眼光与行动力的最好见证。\n让我们继续携手并肩，与团队一起奔向更广阔的未来！\n因为有您，团队更强大；因为有您，前路更光明！🚀\n继续向前，未来可期！';
         } else if (state.inviterLang === 'en') {
-            return '🎉 Congratulations!\nYou have successfully invited a ' + state.newbieLevel + ' partner to join the RS family. A new journey of growth officially begins!\n\nIn this invitation, you have received:\n✅ Referral bonus RM' + bonusAmount + '\n' + extraBonusLineEn + 'Total reward RM' + totalBonus + ' has been credited to your RS account. Please check it out!\n\n' + commissionParagraphEn + 'Every effort will be transformed into a continuous stream of passive income and team growth momentum.\nOne spark, a blazing fire.\nThank you for your initiative and sincere invitation. This achievement is the best proof of your vision and action.\nLet us continue to work hand in hand and rush towards a broader future together!\nBecause of you, the team is stronger; because of you, the future is brighter! 🚀\nMove forward, the future is promising!';
+            return '🎉 Congratulations!\nYou have successfully invited a *' + state.newbieLevel + '* partner to join the RS family. A new journey of growth officially begins!\n\nIn this invitation, you have received:*\n✅ Referral bonus RM' + bonusAmount + '\n' + extraBonusLineEn + 'Total reward RM' + totalBonus + '* has been credited to your RS account. Please check it out!\n\n' + commissionParagraphEn + 'Every effort will be transformed into a continuous stream of passive income and team growth momentum.\nOne spark, a blazing fire.\nThank you for your initiative and sincere invitation. This achievement is the best proof of your vision and action.\nLet us continue to work hand in hand and rush towards a broader future together!\nBecause of you, the team is stronger; because of you, the future is brighter! 🚀\nMove forward, the future is promising!';
         } else {
-            return '🎉 Tahniah!\nAnda telah berjaya menjemput rakan kongsi tahap ' + state.newbieLevel + ' menyertai keluarga RS. Perjalanan pertumbuhan baharu secara rasmi bermula!\n\nDalam jemputan ini, anda telah menerima:\n✅ Bonus rujukan RM' + bonusAmount + '\n' + extraBonusLineMy + 'Jumlah ganjaran RM' + totalBonus + ' telah dikreditkan ke akaun RS anda. Sila semak!\n\n' + commissionParagraphMy + 'Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.\nSatu percikan, api yang marak.\nTerima kasih atas inisiatif dan jemputan ikhlas anda. Pencapaian ini adalah bukti terbaik visi dan tindakan anda.\nMari kita terus bekerjasama dan melangkah ke arah masa depan yang lebih cerah!\nKerana anda, pasukan lebih kuat; kerana anda, masa depan lebih cerah! 🚀\nTerus maju, masa depan menanti!';
+            return '🎉 Tahniah!\nAnda telah berjaya menjemput rakan kongsi tahap *' + state.newbieLevel + '* menyertai keluarga RS. Perjalanan pertumbuhan baharu secara rasmi bermula!\n\nDalam jemputan ini, anda telah menerima:*\n✅ Bonus rujukan RM' + bonusAmount + '\n' + extraBonusLineMy + 'Jumlah ganjaran RM' + totalBonus + '* telah dikreditkan ke akaun RS anda. Sila semak!\n\n' + commissionParagraphMy + 'Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.\nSatu percikan, api yang marak.\nTerima kasih atas inisiatif dan jemputan ikhlas anda. Pencapaian ini adalah bukti terbaik visi dan tindakan anda.\nMari kita terus bekerjasama dan melangkah ke arah masa depan yang lebih cerah!\nKerana anda, pasukan lebih kuat; kerana anda, masa depan lebih cerah! 🚀\nTerus maju, masa depan menanti!';
         }
     }
 
