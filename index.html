@@ -438,10 +438,11 @@
         var extraBonusLineEn = '';
         var extraBonusLineMy = '';
         
+        // 隐藏"基于XX等级"的说明，只显示金额
         if (extraPercent > 0) {
-            extraBonusLineCn = '✅ 额外奖金 ' + bold('RM' + extraAmount.toFixed(2)) + '（基于' + bold(state.newbieLevel) + '等级）\n';
-            extraBonusLineEn = '✅ Extra bonus ' + bold('RM' + extraAmount.toFixed(2)) + ' (based on ' + bold(state.newbieLevel) + ' level)\n';
-            extraBonusLineMy = '✅ Bonus tambahan ' + bold('RM' + extraAmount.toFixed(2)) + ' (berdasarkan tahap ' + bold(state.newbieLevel) + ')\n';
+            extraBonusLineCn = '✅ 额外奖金 ' + bold('RM' + extraAmount.toFixed(2)) + '\n';
+            extraBonusLineEn = '✅ Extra bonus ' + bold('RM' + extraAmount.toFixed(2)) + '\n';
+            extraBonusLineMy = '✅ Bonus tambahan ' + bold('RM' + extraAmount.toFixed(2)) + '\n';
         }
         
         var totalBonus = bold('RM' + (parseFloat(getReferralBonus()) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2));
