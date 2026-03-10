@@ -249,6 +249,7 @@
             margin: 25px 0 10px;
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 <div class="container" id="appContainer">
@@ -555,41 +556,41 @@
         
         // 复制按钮点击
         if (copyBtn) {
-            var 输入  = copyBtn.getAttribute('data-copy');
-            var previewId = 输入  === 'newbie' ? 'newbiePreview' : 'inviterPreview';
-            var 文本 = 文档.getElementById(previewId).innerText;
+            var type = copyBtn.getAttribute('data-copy');
+            var previewId = type === 'newbie' ? 'newbiePreview' : 'inviterPreview';
+            var text = document.getElementById(previewId).innerText;
             
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(文本).键，然后(function() {
+                navigator.clipboard.writeText(text).then(function() {
                     var originalText = copyBtn.innerText;
                     copyBtn.innerText = '✅ 已复制！';
                     copyBtn.classList.add('copy-success');
                     setTimeout(function() { 
                         copyBtn.innerText = originalText; 
-                        copyBtn.classList.移除('copy-success');
+                        copyBtn.classList.remove('copy-success');
                     }, 1500);
                 }).catch(function() {
                     alert('复制失败，请手动复制');
                 });
             } else {
                 // 降级方案 (旧浏览器)
-                var textArea = 文档.createElement('textarea');
-                textArea.value = 文本;
-                文档.body.appendChild(textArea);
+                var textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
                 textArea.select();
                 try {
-                    文档.execCommand('copy');
+                    document.execCommand('copy');
                     var originalText = copyBtn.innerText;
                     copyBtn.innerText = '✅ 已复制！';
                     copyBtn.classList.add('copy-success');
                     setTimeout(function() { 
                         copyBtn.innerText = originalText; 
-                        copyBtn.classList.移除('copy-success');
+                        copyBtn.classList.remove('copy-success');
                     }, 1500);
                 } catch (err) {
                     alert('复制失败，请手动复制');
                 }
-                文档.body.removeChild(textArea);
+                document.body.removeChild(textArea);
             }
             e.preventDefault();
         }
@@ -599,8 +600,8 @@
     container.addEventListener('click', handleClick);
 
     // 监听百分比输入 (输入时实时刷新)
-    文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
-    文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
+    document.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
+    document.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
 
     // 启动
     syncActiveClasses();
