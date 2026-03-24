@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>傻瓜式操作 · 三语同步｜双面板 (工作日版)</title>
+    <title>傻瓜式操作 · 三语同步｜双面板 (活动+额外双奖励版)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -28,6 +28,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
         h1 small {
             font-size: 1rem;
@@ -104,7 +105,7 @@
             border-color: #b1e6cd;
         }
 
-        .extra-row {
+        .reward-row {
             background: #f0fcf6;
             padding: 15px 22px;
             border-radius: 60px;
@@ -112,10 +113,10 @@
             align-items: center;
             gap: 20px;
             flex-wrap: wrap;
-            margin-bottom: 25px;
+            margin-bottom: 18px;
             border: 1px solid #b3dec9;
         }
-        .extra-row label {
+        .reward-row label {
             font-weight: 700;
             color: #1a573b;
             font-size: 1rem;
@@ -133,6 +134,11 @@
         .percent-input:focus {
             outline: none;
             border-color: #1e7e5a;
+        }
+        .inline-hint {
+            font-size: 0.75rem;
+            color: #517e66;
+            margin-left: 8px;
         }
 
         .lang-copy-row {
@@ -197,8 +203,8 @@
             line-height: 1.7;
             color: #173e2d;
             white-space: pre-wrap;
-            min-height: 360px;
-            max-height: 480px;
+            min-height: 380px;
+            max-height: 500px;
             overflow-y: auto;
             margin-top: 10px;
             box-shadow: inset 0 4px 10px rgba(0,0,0,0.02);
@@ -253,7 +259,7 @@
 </head>
 <body>
 <div class="container" id="appContainer">
-    <h1>🧩 傻瓜式操作 · 三语同步 <small>奖金到账提示自动隐藏｜工作日话术</small></h1>
+    <h1>🧩 傻瓜式操作 · 三语同步 <small>活动奖励+额外奖励｜工作日话术</small></h1>
 
     <div class="row-split">
         <!-- 左侧新员工面板 -->
@@ -273,9 +279,16 @@
                     <button class="level-option" data-value="R9">R9</button>
                 </div>
             </div>
-            <div class="extra-row">
+            <!-- 活动奖励（放在额外奖励之前） -->
+            <div class="reward-row">
+                <label>🎉 活动奖励 %</label>
+                <input type="number" id="newbieActivityPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
+                <span class="inline-hint">基于等级价格</span>
+            </div>
+            <div class="reward-row">
                 <label>🎁 额外奖励 %</label>
                 <input type="number" id="newbieExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
+                <span class="inline-hint">基于等级价格</span>
             </div>
             <div class="lang-copy-row">
                 <div class="lang-btn-group" data-group="newbieLang">
@@ -305,7 +318,13 @@
                     <button class="level-option" data-value="R9">R9</button>
                 </div>
             </div>
-            <div class="extra-row">
+            <!-- 活动奖励（邀请者面板，基于新员工等级价格） -->
+            <div class="reward-row">
+                <label>🎉 活动奖励 %</label>
+                <input type="number" id="inviterActivityPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
+                <span class="inline-hint">基于新员工等级价格</span>
+            </div>
+            <div class="reward-row">
                 <label>🎁 额外奖励 %（基于新员工等级）</label>
                 <input type="number" id="inviterExtraPercent" class="percent-input" value="0" min="0" max="100" step="0.1">%
             </div>
@@ -321,7 +340,7 @@
         </div>
     </div>
 
-    <div class="footnote" id="globalRule">⚙️ 邀请者等级 ≥ 新员工 → 显示每日3%佣金段落；否则隐藏。新员工奖金提示随百分比自动显示/隐藏。</div>
+    <div class="footnote" id="globalRule">⚙️ 邀请者等级 ≥ 新员工 → 显示每日3%佣金段落；否则隐藏。活动奖励与额外奖励分别展示，顺序：活动奖励在前，额外奖励在后。</div>
 
     <div class="card">
         <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem;">📊 等级收益基准表</h2>
@@ -347,10 +366,8 @@
 <script>
 (function() {
     'use strict';
-
     var container = document.getElementById('appContainer');
 
-    // 状态对象
     var state = {
         newbieLevel: 'R1',
         inviterLevel: 'R1',
@@ -358,7 +375,6 @@
         inviterLang: 'cn'
     };
 
-    // 等级数据（含基准收益、推荐奖金基数）
     var levelData = {
         'R1': { price: 150, daily: 5, monthly: 150, yearly: 1825, bonus: '15.00' },
         'R2': { price: 450, daily: 15, monthly: 450, yearly: 5475, bonus: '45.00' },
@@ -371,16 +387,9 @@
         'R9': { price: 259200, daily: 10800, monthly: 324000, yearly: 3942000, bonus: '25920.00' }
     };
 
-    // 辅助函数
-    function getRankNum(lvl) {
-        return parseInt(lvl.replace('R', ''), 10);
-    }
+    function getRankNum(lvl) { return parseInt(lvl.replace('R', ''), 10); }
+    function hasDailyCommission() { return getRankNum(state.inviterLevel) >= getRankNum(state.newbieLevel); }
 
-    function hasDailyCommission() {
-        return getRankNum(state.inviterLevel) >= getRankNum(state.newbieLevel);
-    }
-
-    // 根据规则取推荐奖金基数
     function getReferralBonus() {
         if (getRankNum(state.inviterLevel) < getRankNum(state.newbieLevel)) {
             return levelData[state.inviterLevel].bonus;
@@ -389,231 +398,200 @@
         }
     }
 
-    function getNewbieExtraPercent() {
-        var val = document.getElementById('newbieExtraPercent').value;
-        return parseFloat(val) || 0;
-    }
+    // 获取各种百分比 (活动/额外)
+    function getNewbieActivityPercent() { return parseFloat(document.getElementById('newbieActivityPercent').value) || 0; }
+    function getNewbieExtraPercent() { return parseFloat(document.getElementById('newbieExtraPercent').value) || 0; }
+    function getInviterActivityPercent() { return parseFloat(document.getElementById('inviterActivityPercent').value) || 0; }
+    function getInviterExtraPercent() { return parseFloat(document.getElementById('inviterExtraPercent').value) || 0; }
 
-    function getInviterExtraPercent() {
-        var val = document.getElementById('inviterExtraPercent').value;
-        return parseFloat(val) || 0;
-    }
+    function bold(text) { return '*' + text + '*'; }
 
-    // 加粗包装函数
-    function bold(text) {
-        return '*' + text + '*';
-    }
-
-    // ---------- 生成话术（加粗版 + 工作日术语）----------
+    // ---------- 新员工话术生成（活动奖励在前 + 额外奖励在后）----------
     function generateNewbieSpeech() {
         var data = levelData[state.newbieLevel];
         var level = bold(state.newbieLevel);
+        var price = data.price;
+        var activityPercent = getNewbieActivityPercent();
         var extraPercent = getNewbieExtraPercent();
-        var extraAmount = (extraPercent / 100) * data.price;
-        var bonusLine = '';
-
-        if (extraPercent > 0) {
-            bonusLine = '新员工奖金 ' + bold('RM' + extraAmount.toFixed(2)) + ' 已顺利存入您的 RS 账户，请注意查收～';
+        var activityAmount = (activityPercent / 100) * price;
+        var extraAmount = (extraPercent / 100) * price;
+        
+        var activityLine = '';
+        var extraLine = '';
+        // 活动奖励在前
+        if (activityPercent > 0) {
+            activityLine = '🎉 活动奖励 ' + bold('RM' + activityAmount.toFixed(2)) + ' 已顺利存入您的 RS 账户，请注意查收～';
         }
+        if (extraPercent > 0) {
+            extraLine = '🎁 额外奖金 ' + bold('RM' + extraAmount.toFixed(2)) + ' 已顺利存入您的 RS 账户，请注意查收～';
+        }
+        // 合并奖励提示（活动在前）
+        var bonusLines = [];
+        if (activityLine) bonusLines.push(activityLine);
+        if (extraLine) bonusLines.push(extraLine);
+        var bonusText = bonusLines.length ? bonusLines.join('\n') : '';
 
         if (state.newbieLang === 'cn') {
-            return '🎉 恭喜您！ 您已成功晋升至 ' + level + ' 等级！ ' + bonusLine + '\n\n这是您迈向稳健财富增长的重要第一步！ 📈 收入一览 每个工作日收益：' + bold('RM' + data.daily) + ' 30个工作日总收入：' + bold('RM' + data.monthly) + ' 365个工作日总收入：' + bold('RM' + data.yearly.toLocaleString()) + '\n\n为了让您的收入潜力更上一层楼，我们已为您全面开启： ✅ 更多合作伙伴邀请权限 ✅ 专属农耕投资机会\n\n未来，您将与RS、与团队一起，创造更多协同收益，实现资产持续增长。\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\n继续加油，我们一起把小溪变成大河！🚀';
-        } else if (state.newbieLang === 'en') {
-            var enBonusLine = extraPercent > 0 ? 'New member bonus of ' + bold('RM' + extraAmount.toFixed(2)) + ' has been credited to your RS account. Please check it out～' : '';
-            return '🎉 Congratulations! You have successfully advanced to level ' + level + '! ' + enBonusLine + '\n\nThis is your important first step toward steady wealth growth! 📈 Income Overview Each working day income: ' + bold('RM' + data.daily) + ' 30 working days total: ' + bold('RM' + data.monthly) + ' 365 working days total: ' + bold('RM' + data.yearly.toLocaleString()) + '\n\nTo further enhance your income potential, we have fully unlocked for you: ✅ More partner invitation privileges ✅ Exclusive farming investment opportunities\n\nIn the future, you will work with RS and the team to create more synergistic returns and achieve sustained asset growth.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nKeep going, together we turn streams into rivers! 🚀';
-        } else {
-            var myBonusLine = extraPercent > 0 ? 'Bonus ahli baru ' + bold('RM' + extraAmount.toFixed(2)) + ' telah dikreditkan ke akaun RS anda. Sila semak～' : '';
-            return '🎉 Tahniah! Anda telah berjaya naik ke tahap ' + level + '! ' + myBonusLine + '\n\nIni adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! 📈 Ringkasan Pendapatan Pendapatan setiap hari bekerja: ' + bold('RM' + data.daily) + ' Jumlah 30 hari bekerja: ' + bold('RM' + data.monthly) + ' Jumlah 365 hari bekerja: ' + bold('RM' + data.yearly.toLocaleString()) + '\n\nUntuk meningkatkan potensi pendapatan anda, kami telah membuka sepenuhnya: ✅ Lebih banyak keistimewaan jemputan rakan kongsi ✅ Peluang pelaburan pertanian eksklusif\n\nPada masa hadapan, anda akan bekerjasama dengan RS dan pasukan untuk menjana lebih banyak pulangan sinergi dan mencapai pertumbuhan aset yang berterusan.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nTerus maju, kita jadikan anak sungai sebagai sungai besar! 🚀';
+            return '🎉 恭喜您！ 您已成功晋升至 ' + level + ' 等级！ ' + (bonusText ? '\n' + bonusText : '') + '\n\n这是您迈向稳健财富增长的重要第一步！ 📈 收入一览 每个工作日收益：' + bold('RM' + data.daily) + ' 30个工作日总收入：' + bold('RM' + data.monthly) + ' 365个工作日总收入：' + bold('RM' + data.yearly.toLocaleString()) + '\n\n为了让您的收入潜力更上一层楼，我们已为您全面开启： ✅ 更多合作伙伴邀请权限 ✅ 专属农耕投资机会\n\n未来，您将与RS、与团队一起，创造更多协同收益，实现资产持续增长。\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\n继续加油，我们一起把小溪变成大河！🚀';
+        } 
+        else if (state.newbieLang === 'en') {
+            var enActivity = activityPercent > 0 ? '🎉 Activity bonus ' + bold('RM' + activityAmount.toFixed(2)) + ' has been credited to your RS account. Please check it out～' : '';
+            var enExtra = extraPercent > 0 ? '🎁 Extra bonus ' + bold('RM' + extraAmount.toFixed(2)) + ' has been credited to your RS account. Please check it out～' : '';
+            var enBonus = [enActivity, enExtra].filter(Boolean).join('\n');
+            return '🎉 Congratulations! You have successfully advanced to level ' + level + '! ' + (enBonus ? '\n' + enBonus : '') + '\n\nThis is your important first step toward steady wealth growth! 📈 Income Overview Each working day income: ' + bold('RM' + data.daily) + ' 30 working days total: ' + bold('RM' + data.monthly) + ' 365 working days total: ' + bold('RM' + data.yearly.toLocaleString()) + '\n\nTo further enhance your income potential, we have fully unlocked for you: ✅ More partner invitation privileges ✅ Exclusive farming investment opportunities\n\nIn the future, you will work with RS and the team to create more synergistic returns and achieve sustained asset growth.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nKeep going, together we turn streams into rivers! 🚀';
+        } 
+        else {
+            var myActivity = activityPercent > 0 ? '🎉 Bonus Aktiviti ' + bold('RM' + activityAmount.toFixed(2)) + ' telah dikreditkan ke akaun RS anda. Sila semak～' : '';
+            var myExtra = extraPercent > 0 ? '🎁 Bonus tambahan ' + bold('RM' + extraAmount.toFixed(2)) + ' telah dikreditkan ke akaun RS anda. Sila semak～' : '';
+            var myBonus = [myActivity, myExtra].filter(Boolean).join('\n');
+            return '🎉 Tahniah! Anda telah berjaya naik ke tahap ' + level + '! ' + (myBonus ? '\n' + myBonus : '') + '\n\nIni adalah langkah pertama penting anda ke arah pertumbuhan kekayaan yang stabil! 📈 Ringkasan Pendapatan Pendapatan setiap hari bekerja: ' + bold('RM' + data.daily) + ' Jumlah 30 hari bekerja: ' + bold('RM' + data.monthly) + ' Jumlah 365 hari bekerja: ' + bold('RM' + data.yearly.toLocaleString()) + '\n\nUntuk meningkatkan potensi pendapatan anda, kami telah membuka sepenuhnya: ✅ Lebih banyak keistimewaan jemputan rakan kongsi ✅ Peluang pelaburan pertanian eksklusif\n\nPada masa hadapan, anda akan bekerjasama dengan RS dan pasukan untuk menjana lebih banyak pulangan sinergi dan mencapai pertumbuhan aset yang berterusan.\n\nSikit-sikit, lama-lama jadi bukit. 🐄✨\n\nTerus maju, kita jadikan anak sungai sebagai sungai besar! 🚀';
         }
     }
 
+    // ---------- 邀请者话术（活动奖励在前 + 额外奖励在后）----------
     function generateInviterSpeech() {
-        var bonusAmount = bold('RM' + getReferralBonus());
-        var eligible = hasDailyCommission();
-        var extraPercent = getInviterExtraPercent();
-        // 使用新员工等级价格计算额外奖励
+        var bonusBase = parseFloat(getReferralBonus());
         var newbiePrice = levelData[state.newbieLevel].price;
+        var activityPercent = getInviterActivityPercent();
+        var extraPercent = getInviterExtraPercent();
+        var activityAmount = (activityPercent / 100) * newbiePrice;
         var extraAmount = (extraPercent / 100) * newbiePrice;
-
-        var extraBonusLineCn = '';
-        var extraBonusLineEn = '';
-        var extraBonusLineMy = '';
-
-        // 隐藏"基于XX等级"的说明，只显示金额
+        
+        var eligible = hasDailyCommission();
+        
+        // 分别构建奖励行 (活动奖励在前)
+        var activityLineCn = '', activityLineEn = '', activityLineMy = '';
+        var extraLineCn = '', extraLineEn = '', extraLineMy = '';
+        
+        if (activityPercent > 0) {
+            activityLineCn = '✅ 活动奖励 ' + bold('RM' + activityAmount.toFixed(2)) + '\n';
+            activityLineEn = '✅ Activity bonus ' + bold('RM' + activityAmount.toFixed(2)) + '\n';
+            activityLineMy = '✅ Bonus Aktiviti ' + bold('RM' + activityAmount.toFixed(2)) + '\n';
+        }
         if (extraPercent > 0) {
-            extraBonusLineCn = '✅ 额外奖金 ' + bold('RM' + extraAmount.toFixed(2)) + '\n';
-            extraBonusLineEn = '✅ Extra bonus ' + bold('RM' + extraAmount.toFixed(2)) + '\n';
-            extraBonusLineMy = '✅ Bonus tambahan ' + bold('RM' + extraAmount.toFixed(2)) + '\n';
+            extraLineCn = '✅ 额外奖励 ' + bold('RM' + extraAmount.toFixed(2)) + '\n';
+            extraLineEn = '✅ Extra bonus ' + bold('RM' + extraAmount.toFixed(2)) + '\n';
+            extraLineMy = '✅ Bonus tambahan ' + bold('RM' + extraAmount.toFixed(2)) + '\n';
         }
-
-        var totalBonus = bold('RM' + (parseFloat(getReferralBonus()) + (extraPercent > 0 ? extraAmount : 0)).toFixed(2));
-
-        var commissionParagraphCn = '';
-        var commissionParagraphEn = '';
-        var commissionParagraphMy = '';
-
+        
+        var totalReward = bonusBase + (activityPercent > 0 ? activityAmount : 0) + (extraPercent > 0 ? extraAmount : 0);
+        var totalRewardFormatted = bold('RM' + totalReward.toFixed(2));
+        
+        // 推荐奖励行
+        var referralLineCn = '✅ 推荐奖励 ' + bold('RM' + bonusBase.toFixed(2)) + '\n';
+        var referralLineEn = '✅ Referral bonus ' + bold('RM' + bonusBase.toFixed(2)) + '\n';
+        var referralLineMy = '✅ Bonus rujukan ' + bold('RM' + bonusBase.toFixed(2)) + '\n';
+        
+        // 佣金段落 (如果符合条件)
+        var commissionCn = '', commissionEn = '', commissionMy = '';
         if (eligible) {
-            commissionParagraphCn = '更令人期待的是——\n未来您将持续享有下属每日 ' + bold('3%') + ' 的工作佣金！\n';
-            commissionParagraphEn = "What's more exciting——\nYou will continue to enjoy " + bold('3%') + " daily commission from your subordinates in the future!\n";
-            commissionParagraphMy = 'Yang lebih menarik——\nAnda akan terus menikmati komisen harian ' + bold('3%') + ' daripada bawahan pada masa hadapan!\n';
+            commissionCn = '更令人期待的是——\n未来您将持续享有下属每日 ' + bold('3%') + ' 的工作佣金！\n';
+            commissionEn = "What's more exciting——\nYou will continue to enjoy " + bold('3%') + " daily commission from your subordinates in the future!\n";
+            commissionMy = 'Yang lebih menarik——\nAnda akan terus menikmati komisen harian ' + bold('3%') + ' daripada bawahan pada masa hadapan!\n';
         }
-
+        
         if (state.inviterLang === 'cn') {
-            return '🎉 恭喜！\n您已成功邀请一位 ' + bold(state.newbieLevel) + ' 级合作伙伴 加入 RS 大家庭，全新成长之旅正式启航！\n\n本次邀请，您已获得：\n✅ 推荐奖励 ' + bonusAmount + '\n' + extraBonusLineCn + '总计奖励 ' + totalBonus + ' 已全部到账，存入您的 RS 账户，请注意查收！\n\n' + commissionParagraphCn + '每一份努力，都将转化为源源不断的被动收益与团队成长动力。\n一人闪耀是星火，众人齐心是烈焰。\n感谢您的主动拓展与真诚引荐，这份成就，正是您眼光与行动力的最好见证。\n让我们继续携手并肩，与团队一起奔向更广阔的未来！\n因为有您，团队更强大；因为有您，前路更光明！🚀\n继续向前，未来可期！';
-        } else if (state.inviterLang === 'en') {
-            return '🎉 Congratulations!\nYou have successfully invited a ' + bold(state.newbieLevel) + ' partner to join the RS family. A new journey of growth officially begins!\n\nIn this invitation, you have received:\n✅ Referral bonus ' + bonusAmount + '\n' + extraBonusLineEn + 'Total reward ' + totalBonus + ' has been credited to your RS account. Please check it out!\n\n' + commissionParagraphEn + 'Every effort will be transformed into a continuous stream of passive income and team growth momentum.\nOne spark, a blazing fire.\nThank you for your initiative and sincere invitation. This achievement is the best proof of your vision and action.\nLet us continue to work hand in hand and rush towards a broader future together!\nBecause of you, the team is stronger; because of you, the future is brighter! 🚀\nMove forward, the future is promising!';
-        } else {
-            return '🎉 Tahniah!\nAnda telah berjaya menjemput rakan kongsi tahap ' + bold(state.newbieLevel) + ' menyertai keluarga RS. Perjalanan pertumbuhan baharu secara rasmi bermula!\n\nDalam jemputan ini, anda telah menerima:\n✅ Bonus rujukan ' + bonusAmount + '\n' + extraBonusLineMy + 'Jumlah ganjaran ' + totalBonus + ' telah dikreditkan ke akaun RS anda. Sila semak!\n\n' + commissionParagraphMy + 'Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.\nSatu percikan, api yang marak.\nTerima kasih atas inisiatif dan jemputan ikhlas anda. Pencapaian ini adalah bukti terbaik visi dan tindakan anda.\nMari kita terus bekerjasama dan melangkah ke arah masa depan yang lebih cerah!\nKerana anda, pasukan lebih kuat; kerana anda, masa depan lebih cerah! 🚀\nTerus maju, masa depan menanti!';
+            var rewardsCn = referralLineCn + activityLineCn + extraLineCn;
+            return '🎉 恭喜！\n您已成功邀请一位 ' + bold(state.newbieLevel) + ' 级合作伙伴 加入 RS 大家庭，全新成长之旅正式启航！\n\n本次邀请，您已获得：\n' + rewardsCn + '总计奖励 ' + totalRewardFormatted + ' 已全部到账，存入您的 RS 账户，请注意查收！\n\n' + commissionCn + '每一份努力，都将转化为源源不断的被动收益与团队成长动力。\n一人闪耀是星火，众人齐心是烈焰。\n感谢您的主动拓展与真诚引荐，这份成就，正是您眼光与行动力的最好见证。\n让我们继续携手并肩，与团队一起奔向更广阔的未来！\n因为有您，团队更强大；因为有您，前路更光明！🚀\n继续向前，未来可期！';
+        } 
+        else if (state.inviterLang === 'en') {
+            var rewardsEn = referralLineEn + activityLineEn + extraLineEn;
+            return '🎉 Congratulations!\nYou have successfully invited a ' + bold(state.newbieLevel) + ' partner to join the RS family. A new journey of growth officially begins!\n\nIn this invitation, you have received:\n' + rewardsEn + 'Total reward ' + totalRewardFormatted + ' has been credited to your RS account. Please check it out!\n\n' + commissionEn + 'Every effort will be transformed into a continuous stream of passive income and team growth momentum.\nOne spark, a blazing fire.\nThank you for your initiative and sincere invitation. This achievement is the best proof of your vision and action.\nLet us continue to work hand in hand and rush towards a broader future together!\nBecause of you, the team is stronger; because of you, the future is brighter! 🚀\nMove forward, the future is promising!';
+        } 
+        else {
+            var rewardsMy = referralLineMy + activityLineMy + extraLineMy;
+            return '🎉 Tahniah!\nAnda telah berjaya menjemput rakan kongsi tahap ' + bold(state.newbieLevel) + ' menyertai keluarga RS. Perjalanan pertumbuhan baharu secara rasmi bermula!\n\nDalam jemputan ini, anda telah menerima:\n' + rewardsMy + 'Jumlah ganjaran ' + totalRewardFormatted + ' telah dikreditkan ke akaun RS anda. Sila semak!\n\n' + commissionMy + 'Setiap usaha akan berubah menjadi aliran pendapatan pasif dan momentum pertumbuhan pasukan.\nSatu percikan, api yang marak.\nTerima kasih atas inisiatif dan jemputan ikhlas anda. Pencapaian ini adalah bukti terbaik visi dan tindakan anda.\nMari kita terus bekerjasama dan melangkah ke arah masa depan yang lebih cerah!\nKerana anda, pasukan lebih kuat; kerana anda, masa depan lebih cerah! 🚀\nTerus maju, masa depan menanti!';
         }
     }
 
-    // 刷新预览 + 底部规则
     function refreshAll() {
         document.getElementById('newbiePreview').innerText = generateNewbieSpeech();
         document.getElementById('inviterPreview').innerText = generateInviterSpeech();
         var ruleEl = document.getElementById('globalRule');
         if (hasDailyCommission()) {
-            ruleEl.innerText = '✅ 邀请者等级 ≥ 新员工 → 显示每日3%佣金段落';
+            ruleEl.innerText = '✅ 邀请者等级 ≥ 新员工 → 显示每日3%佣金段落 | 活动奖励与额外奖励均已独立展示（活动在前）';
         } else {
-            ruleEl.innerText = '⚠️ 邀请者等级 < 新员工 → 隐藏每日3%佣金段落';
+            ruleEl.innerText = '⚠️ 邀请者等级 < 新员工 → 隐藏每日3%佣金段落 | 活动奖励与额外奖励保持展示（活动在前）';
         }
     }
 
-    // 同步active类
     function syncActiveClasses() {
         // 新员工等级
-        var newbieLevelBtns = document.querySelectorAll('[data-group="newbieLevel"] .level-option');
-        for (var i = 0; i < newbieLevelBtns.length; i++) {
-            var btn = newbieLevelBtns[i];
-            if (btn.getAttribute('data-value') === state.newbieLevel) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        }
-
-        var inviterLevelBtns = document.querySelectorAll('[data-group="inviterLevel"] .level-option');
-        for (var i = 0; i < inviterLevelBtns.length; i++) {
-            var btn = inviterLevelBtns[i];
-            if (btn.getAttribute('data-value') === state.inviterLevel) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        }
-
-        var newbieLangBtns = document.querySelectorAll('[data-group="newbieLang"] .lang-btn');
-        for (var i = 0; i < newbieLangBtns.length; i++) {
-            var btn = newbieLangBtns[i];
-            if (btn.getAttribute('data-value') === state.newbieLang) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        }
-
-        var inviterLangBtns = document.querySelectorAll('[data-group="inviterLang"] .lang-btn');
-        for (var i = 0; i < inviterLangBtns.length; i++) {
-            var btn = inviterLangBtns[i];
-            if (btn.getAttribute('data-value') === state.inviterLang) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        }
+        document.querySelectorAll('[data-group="newbieLevel"] .level-option').forEach(btn => {
+            if (btn.getAttribute('data-value') === state.newbieLevel) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        document.querySelectorAll('[data-group="inviterLevel"] .level-option').forEach(btn => {
+            if (btn.getAttribute('data-value') === state.inviterLevel) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        document.querySelectorAll('[data-group="newbieLang"] .lang-btn').forEach(btn => {
+            if (btn.getAttribute('data-value') === state.newbieLang) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        文档.querySelectorAll('[data-group="inviterLang"] .lang-btn').forEach(btn => {
+            if (btn.getAttribute('data-value') === state.inviterLang) btn.classList.add('active');
+            else btn.classList.移除('active');
+        });
     }
 
-    // 事件处理：利用事件委托 - 修复版使用 closest() 方法
     function handleClick(e) {
         var target = e.target;
-
-        // 使用 closest 查找最近的匹配元素，处理点击按钮内部文本的情况
         var levelBtn = target.closest('.level-option');
         var langBtn = target.closest('.lang-btn');
         var copyBtn = target.closest('.copy-btn-icon');
-
-        // 等级按钮点击
+        
         if (levelBtn) {
             var group = levelBtn.parentElement.getAttribute('data-group');
-            if (group === 'newbieLevel') {
-                state.newbieLevel = levelBtn.getAttribute('data-value');
-            } else if (group === 'inviterLevel') {
-                state.inviterLevel = levelBtn.getAttribute('data-value');
-            }
+            if (group === 'newbieLevel') state.newbieLevel = levelBtn.getAttribute('data-value');
+            else if (group === 'inviterLevel') state.inviterLevel = levelBtn.getAttribute('data-value');
             syncActiveClasses();
             refreshAll();
             e.preventDefault();
             return;
         }
-
-        // 语言按钮点击
         if (langBtn) {
             var group = langBtn.parentElement.getAttribute('data-group');
-            if (group === 'newbieLang') {
-                state.newbieLang = langBtn.getAttribute('data-value');
-            } else if (group === 'inviterLang') {
-                state.inviterLang = langBtn.getAttribute('data-value');
-            }
+            if (group === 'newbieLang') state.newbieLang = langBtn.getAttribute('data-value');
+            else if (group === 'inviterLang') state.inviterLang = langBtn.getAttribute('data-value');
             syncActiveClasses();
             refreshAll();
             e.preventDefault();
             return;
         }
-
-        // 复制按钮点击
         if (copyBtn) {
-            var type = copyBtn.getAttribute('data-copy');
-            var previewId = type === 'newbie' ? 'newbiePreview' : 'inviterPreview';
-            var text = document.getElementById(previewId).innerText;
-
+            var 输入  = copyBtn.getAttribute('data-copy');
+            var previewId = 输入  === 'newbie' ? 'newbiePreview' : 'inviterPreview';
+            var 文本 = 文档.getElementById(previewId).innerText;
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).then(function() {
-                    var originalText = copyBtn.innerText;
+                navigator.clipboard.writeText(文本).then(() => {
+                    var orig = copyBtn.innerText;
                     copyBtn.innerText = '✅ 已复制！';
                     copyBtn.classList.add('copy-success');
-                    setTimeout(function() { 
-                        copyBtn.innerText = originalText; 
-                        copyBtn.classList.remove('copy-success');
-                    }, 1500);
-                }).catch(function() {
-                    alert('复制失败，请手动复制');
-                });
+                    setTimeout(() => { copyBtn.innerText = orig; copyBtn.classList.移除('copy-success'); }, 1500);
+                }).catch(() => alert('复制失败'));
             } else {
-                // 降级方案 (旧浏览器)
-                var textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    var originalText = copyBtn.innerText;
-                    copyBtn.innerText = '✅ 已复制！';
-                    copyBtn.classList.add('copy-success');
-                    setTimeout(function() { 
-                        copyBtn.innerText = originalText; 
-                        copyBtn.classList.remove('copy-success');
-                    }, 1500);
-                } catch (err) {
-                    alert('复制失败，请手动复制');
-                }
-                document.body.removeChild(textArea);
+                var ta = 文档.createElement('textarea');
+                ta.value = 文本;
+                文档.body.appendChild(ta);
+                ta.select();
+                try { 文档.execCommand('copy'); alert('已复制'); } catch(e) { alert('复制失败'); }
+                文档.body.removeChild(ta);
             }
             e.preventDefault();
         }
     }
-
-    // 监听容器事件
+    
     container.addEventListener('click', handleClick);
-
-    // 监听百分比输入 (输入时实时刷新)
-    document.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
-    document.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
-
-    // 启动
+    文档.getElementById('newbieActivityPercent').addEventListener('input', refreshAll);
+    文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
+    文档.getElementById('inviterActivityPercent').addEventListener('input', refreshAll);
+    文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
+    
     syncActiveClasses();
     refreshAll();
 })();
 </script>
-<!-- 已将话术中的“每日收益”改为“每个工作日收益”，“30天收入”改为“30个工作日总收入”，“365天收入”改为“365个工作日总收入” -->
 </body>
 </html>
+```
