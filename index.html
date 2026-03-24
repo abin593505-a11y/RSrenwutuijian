@@ -529,9 +529,9 @@
             if (btn.getAttribute('data-value') === state.newbieLang) btn.classList.add('active');
             else btn.classList.remove('active');
         });
-        文档.querySelectorAll('[data-group="inviterLang"] .lang-btn').forEach(btn => {
+        document.querySelectorAll('[data-group="inviterLang"] .lang-btn').forEach(btn => {
             if (btn.getAttribute('data-value') === state.inviterLang) btn.classList.add('active');
-            else btn.classList.移除('active');
+            else btn.classList.remove('active');
         });
     }
 
@@ -560,33 +560,33 @@
             return;
         }
         if (copyBtn) {
-            var 输入  = copyBtn.getAttribute('data-copy');
-            var previewId = 输入  === 'newbie' ? 'newbiePreview' : 'inviterPreview';
-            var 文本 = 文档.getElementById(previewId).innerText;
+            var type = copyBtn.getAttribute('data-copy');
+            var previewId = type === 'newbie' ? 'newbiePreview' : 'inviterPreview';
+            var text = document.getElementById(previewId).innerText;
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(文本).then(() => {
+                navigator.clipboard.writeText(text).then(() => {
                     var orig = copyBtn.innerText;
                     copyBtn.innerText = '✅ 已复制！';
                     copyBtn.classList.add('copy-success');
-                    setTimeout(() => { copyBtn.innerText = orig; copyBtn.classList.移除('copy-success'); }, 1500);
+                    setTimeout(() => { copyBtn.innerText = orig; copyBtn.classList.remove('copy-success'); }, 1500);
                 }).catch(() => alert('复制失败'));
             } else {
-                var ta = 文档.createElement('textarea');
-                ta.value = 文本;
-                文档.body.appendChild(ta);
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
                 ta.select();
-                try { 文档.execCommand('copy'); alert('已复制'); } catch(e) { alert('复制失败'); }
-                文档.body.removeChild(ta);
+                try { document.execCommand('copy'); alert('已复制'); } catch(e) { alert('复制失败'); }
+                document.body.removeChild(ta);
             }
             e.preventDefault();
         }
     }
     
     container.addEventListener('click', handleClick);
-    文档.getElementById('newbieActivityPercent').addEventListener('input', refreshAll);
-    文档.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
-    文档.getElementById('inviterActivityPercent').addEventListener('input', refreshAll);
-    文档.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
+    document.getElementById('newbieActivityPercent').addEventListener('input', refreshAll);
+    document.getElementById('newbieExtraPercent').addEventListener('input', refreshAll);
+    document.getElementById('inviterActivityPercent').addEventListener('input', refreshAll);
+    document.getElementById('inviterExtraPercent').addEventListener('input', refreshAll);
     
     syncActiveClasses();
     refreshAll();
@@ -594,4 +594,3 @@
 </script>
 </body>
 </html>
-```
